@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">appRecipe</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="title_home">Любимые</string>
+    <string name="title_dashboard">Заметки</string>
+    <string name="title_notifications">Каталог</string>
+    <string name="title_setting">Настройки</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
