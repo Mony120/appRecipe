@@ -34,7 +34,7 @@
         </FrameLayout>
 
         <TextView
-            android:id="@+id/title"
+            android:id="@+id/name_recipe"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -43,25 +43,13 @@
             android:textColor="@color/black"
             android:textSize="30sp"
             android:textStyle="bold"/>
-        <TextView
-            android:id="@+id/ing"
-            android:layout_width="0dp"
-            android:layout_height="0dp"/>
-        <TextView
-            android:id="@+id/cook"
-            android:layout_width="0dp"
-            android:layout_height="0dp"/>
-        <TextView
-            android:id="@+id/call"
-            android:layout_width="0dp"
-            android:layout_height="0dp"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/subhead"
+                android:id="@+id/time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="35-40 мин"
@@ -70,7 +58,7 @@
                 android:alpha="0.5"
                 android:textStyle="italic"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/title"
+                app:layout_constraintTop_toBottomOf="@id/name_recipe"
                 tools:ignore="NotSibling"
                 android:paddingStart="15dp"/>
 
@@ -82,8 +70,8 @@
                 android:paddingStart="5dp"
                 android:src="@drawable/baseline_timer_24"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/subhead"
-                app:layout_constraintTop_toTopOf="@id/subhead"
+                app:layout_constraintStart_toEndOf="@id/time"
+                app:layout_constraintTop_toTopOf="@id/time"
                 android:alpha="0.5"/>
 
 
@@ -95,7 +83,7 @@
                 android:src="@drawable/baseline_favorite_border_24"
                 android:background="@null"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/subhead"
+                app:layout_constraintTop_toTopOf="@id/time"
                 android:paddingEnd="15dp"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
