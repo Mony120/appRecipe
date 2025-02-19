@@ -2,6 +2,7 @@ package com.example.apprecipe
 
 import android.content.Context
 import android.os.Bundle
+import android.view.View
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -39,5 +40,13 @@ class MainActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+    }
+    fun hideBottomNavigation() {
+        binding.navView.visibility = View.GONE
+    }
+
+    // Метод для показа нижней панели навигации
+    fun showBottomNavigation() {
+        binding.navView.visibility = View.VISIBLE
     }
 }
