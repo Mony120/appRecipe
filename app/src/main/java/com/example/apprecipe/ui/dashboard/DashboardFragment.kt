@@ -5,18 +5,27 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.Button
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.apprecipe.R
+import com.example.apprecipe.databinding.FragmentDashboardBinding
+import com.google.firebase.auth.FirebaseAuth
 
 class DashboardFragment : Fragment() {
+
+    private var _binding: FragmentDashboardBinding? = null
+    private val binding get() = _binding!!
+
     private lateinit var noteInput: EditText
     private lateinit var addNoteButton: Button // Изменено на AppCompatImageButton
     private lateinit var recyclerView: RecyclerView
@@ -31,6 +40,8 @@ class DashboardFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_dashboard, container, false)
+
+        setupButtonListeners()
 
         noteInput = view.findViewById(R.id.note_input)
         addNoteButton = view.findViewById(R.id.add_note_button) // Убедитесь, что это AppCompatImageButton
@@ -56,7 +67,8 @@ class DashboardFragment : Fragment() {
 
 
         }
-
+        val registrationPrompt: LinearLayout = binding.homeRegistrationPrompt
+        checkCurrentUser (registrationPrompt)
 
         return view
     }
@@ -156,6 +168,39 @@ class DashboardFragment : Fragment() {
 
             builder.show()
 
+        }
+    }
+    private fun checkCurrentUser (registrationPrompt: LinearLayout) {
+        val currentUser  = FirebaseAuth.getInstance().currentUser  // Получение текущего пользователя
+
+        if (currentUser  == null) {
+            showRegistrationPrompt(registrationPrompt) // Отображение подсказки регистрации, если пользователь не найден
+            hideOtherElements() // Скрытие остальных элементов
+        } else {
+            registrationPrompt.visibility = View.GONE // Скрытие подсказки, если пользователь найден
+            showOtherElements() // Показ остальных элементов
+        }
+    }
+
+    private fun hideOtherElements() {
+        binding.scroll.visibility = View.GONE // Скрыть ScrollView
+        binding.recyclerView.visibility = View.GONE // Скрыть другие элементы, если необходимо
+    }
+
+    private fun showOtherElements() {
+        binding.scroll.visibility = View.VISIBLE // Показать ScrollView
+        binding.recyclerView.visibility = View.VISIBLE // Показать другие элементы, если они скрыты
+    }
+
+    private fun showRegistrationPrompt(registrationPrompt: LinearLayout) {
+        registrationPrompt.visibility = View.VISIBLE // Отображение подсказки регистрации
+        val slideIn = AnimationUtils.loadAnimation(requireContext(), R.anim.slide_in_bottom) // Загрузка анимации
+        registrationPrompt.startAnimation(slideIn) // Запуск анимации
+    }
+
+    private fun setupButtonListeners() {
+        binding.homeRegistrationBtn.setOnClickListener {
+            findNavController().navigate(R.id.navigation_setting) // Переход к фрагменту регистрации
         }
     }
 }
