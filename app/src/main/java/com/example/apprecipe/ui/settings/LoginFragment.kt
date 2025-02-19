@@ -1,4 +1,4 @@
-package com.example.apprecipe.ui.notifications
+package com.example.apprecipe.ui.settings
 
 import android.os.Bundle
 import android.view.LayoutInflater

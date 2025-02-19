@@ -1,4 +1,4 @@
-package com.example.apprecipe.ui
+package com.example.apprecipe.ui.settings
 
 import android.content.Context
 import android.os.Bundle
