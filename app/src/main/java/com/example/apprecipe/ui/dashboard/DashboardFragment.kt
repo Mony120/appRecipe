@@ -20,6 +20,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.apprecipe.R
 import com.example.apprecipe.databinding.FragmentDashboardBinding
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.*
+
+data class Note(val id: String, val text: String)
 
 class DashboardFragment : Fragment() {
 
@@ -27,32 +30,28 @@ class DashboardFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var noteInput: EditText
-    private lateinit var addNoteButton: Button // Изменено на AppCompatImageButton
+    private lateinit var addNoteButton: Button
     private lateinit var recyclerView: RecyclerView
     private lateinit var noteAdapter: NoteAdapter
-    private val notesList: MutableList<String> = mutableListOf()
-    private val sharedPreferences by lazy {
-        requireActivity().getSharedPreferences("notes_prefs", Context.MODE_PRIVATE)
+    private val notesList: MutableList<Note> = mutableListOf()
+    private val database: DatabaseReference by lazy {
+        FirebaseDatabase.getInstance().getReference("users/${FirebaseAuth.getInstance().currentUser ?.uid}/notes")
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // Инициализация binding
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
 
-        // Инициализация элементов интерфейса
         noteInput = binding.noteInput
-        addNoteButton = binding.addNoteButton // Убедитесь, что это AppCompatImageButton
+        addNoteButton = binding.addNoteButton
         recyclerView = binding.recyclerView
 
-        // Настройка RecyclerView
         noteAdapter = NoteAdapter(notesList)
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter = noteAdapter
 
-        // Настройка слушателей кнопок
         setupButtonListeners()
 
         loadNotes() // Загружаем заметки при создании фрагмента
@@ -60,10 +59,8 @@ class DashboardFragment : Fragment() {
         addNoteButton.setOnClickListener {
             val noteText = noteInput.text.toString()
             if (noteText.isNotEmpty()) {
-                notesList.add(noteText)
-                noteAdapter.notifyItemInserted(notesList.size - 1)
+                saveNoteToFirebase(noteText)
                 noteInput.text.clear()
-                saveNotes() // Сохраняем заметки после добавления
             } else {
                 Toast.makeText(requireContext(), "Введите заметку!", Toast.LENGTH_SHORT).show()
             }
@@ -72,38 +69,55 @@ class DashboardFragment : Fragment() {
         val registrationPrompt: LinearLayout = binding.homeRegistrationPrompt
         checkCurrentUser (registrationPrompt)
 
-        return binding.root // Возвращаем корневой элемент
+        return binding.root
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        // Освобождаем ссылку на binding, чтобы избежать утечек памяти
         _binding = null
     }
 
-    // Метод для сохранения заметок в SharedPreferences
-    private fun saveNotes() {
-        val editor = sharedPreferences.edit()
-        editor.putStringSet("notes", notesList.toSet())
-        editor.apply()
-    }
-
-    // Метод для загрузки заметок из SharedPreferences
-    private fun loadNotes() {
-        val savedNotes = sharedPreferences.getStringSet("notes", emptySet())
-        savedNotes?.let {
-            notesList.clear()
-            notesList.addAll(it)
-            noteAdapter.notifyDataSetChanged()
+    // Метод для сохранения заметки в Firebase
+    private fun saveNoteToFirebase(noteText: String) {
+        val noteId = database.push().key // Генерируем уникальный ключ для заметки
+        noteId?.let {
+            database.child(it).setValue(noteText).addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    notesList.add(Note(it, noteText))
+                    noteAdapter.notifyItemInserted(notesList.size - 1)
+                } else {
+                    Toast.makeText(requireContext(), "Ошибка при сохранении заметки", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 
-    // Вложенный адаптер для заметок
-    private inner class NoteAdapter(private val notes: MutableList<String>) : RecyclerView.Adapter<NoteAdapter.NoteViewHolder>() {
+    // Метод для загрузки заметок из Firebase
+    private fun loadNotes() {
+        database.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                notesList.clear()
+                for (snapshot in dataSnapshot.children) {
+                    val noteText = snapshot.getValue(String::class.java)
+                    val noteId = snapshot.key
+                    if (noteText != null && noteId != null) {
+                        notesList.add(Note(noteId, noteText))
+                    }
+                }
+                noteAdapter.notifyDataSetChanged()
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Toast.makeText(requireContext(), "Ошибка загрузки заметок", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private inner class NoteAdapter(private val notes: MutableList<Note>) : RecyclerView.Adapter<NoteAdapter.NoteViewHolder>() {
 
         inner class NoteViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             val noteText: TextView = itemView.findViewById(R.id.note_text)
-            val btnEdit: AppCompatImageButton = itemView.findViewById(R.id.btnEdit) // Изменено на AppCompatImageButton
+            val btnEdit: AppCompatImageButton = itemView.findViewById(R.id.btnEdit)
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
@@ -112,9 +126,7 @@ class DashboardFragment : Fragment() {
         }
 
         override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
-            holder.noteText.text = notes[position]
-
-            // Обработка нажатия на кнопку редактирования
+            holder.noteText.text = notes[position].text
             holder.btnEdit.setOnClickListener {
                 showEditDialog(position, notes[position])
             }
@@ -130,54 +142,65 @@ class DashboardFragment : Fragment() {
             return notes.size
         }
 
-        // Метод для удаления заметки по позиции
-        private fun removeNoteAt(position: Int) {
-            notes.removeAt(position)
-            notifyItemRemoved(position)
-            notifyItemRangeChanged(position, notes.size) // Обновляем позиции оставшихся элементов
-            saveNotes() // Сохраняем заметки после удаления
+        // Метод для отображения диалогового окна редактирования заметки
+        private fun showEditDialog(position: Int, currentNote: Note) {
+            val editText = EditText(requireContext())
+            editText.setText(currentNote.text)
+
+            AlertDialog.Builder(requireContext())
+                .setTitle("Редактировать заметку")
+                .setView(editText)
+                .setPositiveButton("Сохранить") { _, _ ->
+                    val updatedNote = editText.text.toString()
+                    if (updatedNote.isNotEmpty()) {
+                        updateNoteInFirebase(currentNote.id, updatedNote)
+                    } else {
+                        Toast.makeText(requireContext(), "Заметка не может быть пустой", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                .setNegativeButton("Отмена", null)
+                .show()
+        }
+
+        // Метод для обновления заметки в Firebase
+        private fun updateNoteInFirebase(noteId: String, updatedNote: String) {
+            database.child(noteId).setValue(updatedNote).addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val position = notes.indexOfFirst { it.id == noteId }
+                    if (position != -1) {
+                        notes[position] = Note(noteId, updatedNote)
+                        notifyItemChanged(position)
+                    }
+                } else {
+                    Toast.makeText(requireContext(), "Ошибка при обновлении заметки", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
 
         // Метод для отображения диалогового окна подтверждения удаления
         private fun showDeleteConfirmationDialog(position: Int) {
-            val builder = AlertDialog.Builder(requireContext())
-            builder.setTitle("Удалить заметку?")
-            builder.setMessage("Вы уверены, что хотите удалить эту заметку?")
-            builder.setPositiveButton("Да") { dialog, _ ->
-                removeNoteAt(position) // Удаляем заметку
-                dialog.dismiss()
-            }
-            builder.setNegativeButton("Нет") { dialog, _ ->
-                dialog.dismiss()
-            }
-            builder.show()
+            AlertDialog.Builder(requireContext())
+                .setTitle("Удалить заметку")
+                .setMessage("Вы уверены, что хотите удалить эту заметку?")
+                .setPositiveButton("Да") { _, _ -> removeNoteAt(position) }
+                .setNegativeButton("Нет", null)
+                .show()
         }
 
-        // Метод для отображения диалогового окна редактирования заметки
-        private fun showEditDialog(position: Int, currentNote: String) {
-            val editText = EditText(requireContext())
-            editText.setText(currentNote)
-
-            val builder = AlertDialog.Builder(requireContext())
-            builder.setTitle("Редактировать заметку")
-            builder.setView(editText)
-            builder.setPositiveButton("Сохранить") { dialog, _ ->
-                val updatedNote = editText.text.toString()
-                if (updatedNote.isNotEmpty()) {
-                    notes[position] = updatedNote
-                    notifyItemChanged(position)
-                    saveNotes() // Сохраняем заметки после редактирования
+        // Метод для удаления заметки по позиции
+        private fun removeNoteAt(position: Int) {
+            val noteId = notes[position].id // Получаем ключ заметки
+            database.child(noteId).removeValue().addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    notes.removeAt(position)
+                    notifyItemRemoved(position)
+                } else {
+                    Toast.makeText(requireContext(), "Ошибка при удалении заметки", Toast.LENGTH_SHORT).show()
                 }
-                dialog.dismiss()
             }
-            builder.setNegativeButton("Отмена") { dialog, _ ->
-                dialog.dismiss()
-            }
-
-            builder.show()
-
         }
     }
+
     private fun checkCurrentUser (registrationPrompt: LinearLayout) {
         val currentUser  = FirebaseAuth.getInstance().currentUser  // Получение текущего пользователя
 
