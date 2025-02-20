@@ -38,18 +38,22 @@ class DashboardFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_dashboard, container, false)
+    ): View {
+        // Инициализация binding
+        _binding = FragmentDashboardBinding.inflate(inflater, container, false)
 
-        setupButtonListeners()
+        // Инициализация элементов интерфейса
+        noteInput = binding.noteInput
+        addNoteButton = binding.addNoteButton // Убедитесь, что это AppCompatImageButton
+        recyclerView = binding.recyclerView
 
-        noteInput = view.findViewById(R.id.note_input)
-        addNoteButton = view.findViewById(R.id.add_note_button) // Убедитесь, что это AppCompatImageButton
-        recyclerView = view.findViewById(R.id.recycler_view)
-
+        // Настройка RecyclerView
         noteAdapter = NoteAdapter(notesList)
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter = noteAdapter
+
+        // Настройка слушателей кнопок
+        setupButtonListeners()
 
         loadNotes() // Загружаем заметки при создании фрагмента
 
@@ -60,17 +64,21 @@ class DashboardFragment : Fragment() {
                 noteAdapter.notifyItemInserted(notesList.size - 1)
                 noteInput.text.clear()
                 saveNotes() // Сохраняем заметки после добавления
-            }
-            else{
+            } else {
                 Toast.makeText(requireContext(), "Введите заметку!", Toast.LENGTH_SHORT).show()
             }
-
-
         }
+
         val registrationPrompt: LinearLayout = binding.homeRegistrationPrompt
         checkCurrentUser (registrationPrompt)
 
-        return view
+        return binding.root // Возвращаем корневой элемент
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        // Освобождаем ссылку на binding, чтобы избежать утечек памяти
+        _binding = null
     }
 
     // Метод для сохранения заметок в SharedPreferences
