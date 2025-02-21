@@ -6,5 +6,6 @@
         <item name="colorAccent">@color/colorAccentDark</item>
         <item name="textFillColor">@color/colorTextDark</item>
         <item name="android:windowLightStatusBar">false</item>
+        <item name="colorOnPrimary">@color/colorOnPrimaryDark</item>
     </style>
 </resources>

@@ -6,5 +6,6 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="textFillColor">@color/colorText</item>
         <item name="android:windowLightStatusBar">true</item>
+        <item name="colorOnPrimary">@color/colorOnPrimary</item>
     </style>
 </resources>

@@ -89,6 +89,7 @@
                 android:text="Добавить заметку"
                 android:textColor="?attr/textFillColor"
                 android:layout_margin="15dp"
+
                 android:backgroundTint="?attr/colorAccent"/>
 
         </LinearLayout>
