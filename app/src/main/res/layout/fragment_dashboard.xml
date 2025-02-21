@@ -4,6 +4,57 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <LinearLayout
+        android:id="@+id/home_registration_prompt"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/rounded_frame"
+        android:orientation="vertical"
+        android:backgroundTint="@color/pink"
+        android:visibility="gone"
+        android:layout_marginTop="300dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/registration_prompt_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="Пожалуйста, войдите для продолжения."
+            android:textSize="35sp"
+            android:fontFamily="sans-serif-condensed-light"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:layout_marginTop="30dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="Для просмотра и чтения книг необходимо зарегистрироваться"
+            android:textSize="16sp"
+            android:textColor="@color/white"
+            android:layout_marginTop="10dp"
+            android:fontFamily="sans-serif-condensed-light"
+            android:textStyle="bold"
+            android:layout_marginHorizontal="60dp"/>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/home_registration_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_frame"
+            android:text="Войти"
+            android:fontFamily="sans-serif-condensed-light"
+            android:layout_marginHorizontal="100dp"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:backgroundTint="@color/pink"
+            android:layout_marginTop="60dp"/>
+    </LinearLayout>
 
     <ScrollView
         android:id="@+id/scroll"
@@ -38,6 +89,7 @@
                 android:text="Добавить заметку"
                 android:textColor="?attr/textFillColor"
                 android:layout_margin="15dp"
+
                 android:backgroundTint="?attr/colorAccent"/>
 
         </LinearLayout>

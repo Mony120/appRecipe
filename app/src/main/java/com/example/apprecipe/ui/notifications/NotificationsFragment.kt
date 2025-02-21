@@ -5,12 +5,17 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
+import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.apprecipe.R
 import com.example.apprecipe.Recipe
 import com.example.apprecipe.RecipeAdapter
 import com.example.apprecipe.databinding.FragmentNotificationsBinding
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
 class NotificationsFragment : Fragment() {
@@ -33,6 +38,11 @@ class NotificationsFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(context)
         recipeAdapter = RecipeAdapter(recipeList)
         recyclerView.adapter = recipeAdapter
+
+        setupButtonListeners()
+
+        val registrationPrompt: LinearLayout = binding.homeRegistrationPrompt
+        checkCurrentUser (registrationPrompt)
 
         fetchRecipesFromFirebase()
 
@@ -59,6 +69,42 @@ class NotificationsFragment : Fragment() {
             }
         })
     }
+    private fun checkCurrentUser (registrationPrompt: LinearLayout) {
+        val currentUser  = FirebaseAuth.getInstance().currentUser  // Получение текущего пользователя
+
+        if (currentUser  == null) {
+            showRegistrationPrompt(registrationPrompt) // Отображение подсказки регистрации, если пользователь не найден
+            hideOtherElements() // Скрытие остальных элементов
+        } else {
+            registrationPrompt.visibility = View.GONE // Скрытие подсказки, если пользователь найден
+            showOtherElements() // Показ остальных элементов
+        }
+    }
+
+    private fun hideOtherElements() {
+        binding.scroll.visibility = View.GONE // Скрыть ScrollView
+        binding.recycleView.visibility = View.GONE // Скрыть ScrollView
+        binding.cdView.visibility = View.GONE // Скрыть другие элементы, если необходимо
+    }
+
+    private fun showOtherElements() {
+        binding.scroll.visibility = View.VISIBLE // Показать ScrollView
+        binding.recycleView.visibility = View.VISIBLE // Показать ScrollView
+        binding.cdView.visibility = View.VISIBLE // Показать другие элементы, если они скрыты
+    }
+
+    private fun showRegistrationPrompt(registrationPrompt: LinearLayout) {
+        registrationPrompt.visibility = View.VISIBLE // Отображение подсказки регистрации
+        val slideIn = AnimationUtils.loadAnimation(requireContext(), com.example.apprecipe.R.anim.slide_in_bottom) // Загрузка анимации
+        registrationPrompt.startAnimation(slideIn) // Запуск анимации
+    }
+
+    private fun setupButtonListeners() {
+        binding.homeRegistrationBtn.setOnClickListener {
+            findNavController().navigate(R.id.navigation_setting) // Переход к фрагменту регистрации
+        }
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

@@ -24,7 +24,18 @@
         tools:layout="@layout/fragment_notifications" />
     <fragment
         android:id="@+id/navigation_setting"
-        android:name="com.example.apprecipe.ui.SettingFragment"
+        android:name="com.example.apprecipe.ui.settings.SettingFragment"
         android:label="@string/title_setting"
         tools:layout="@layout/fragment_setting" />
+    <fragment
+        android:id="@+id/navigation_login"
+        android:name="com.example.apprecipe.ui.settings.LoginFragment"
+        android:label="вход"
+        tools:layout="@layout/fragment_login" />
+
+    <fragment
+        android:id="@+id/navigation_reg"
+        android:name="com.example.apprecipe.ui.settings.RegFragment"
+        android:label="рег"
+        tools:layout="@layout/fragment_reg" />
 </navigation>
