@@ -85,6 +85,7 @@ class DashboardFragment : Fragment() {
                 if (task.isSuccessful) {
                     notesList.add(Note(it, noteText))
                     noteAdapter.notifyItemInserted(notesList.size - 1)
+                    loadNotes()
                 } else {
                     Toast.makeText(requireContext(), "Ошибка при сохранении заметки", Toast.LENGTH_SHORT).show()
                 }
@@ -192,8 +193,7 @@ class DashboardFragment : Fragment() {
             val noteId = notes[position].id // Получаем ключ заметки
             database.child(noteId).removeValue().addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    notes.removeAt(position)
-                    notifyItemRemoved(position)
+                    loadNotes() // Перезагружаем заметки после удаления
                 } else {
                     Toast.makeText(requireContext(), "Ошибка при удалении заметки", Toast.LENGTH_SHORT).show()
                 }
