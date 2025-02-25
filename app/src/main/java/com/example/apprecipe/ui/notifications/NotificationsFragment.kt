@@ -18,10 +18,11 @@ import com.example.apprecipe.databinding.FragmentNotificationsBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
-class NotificationsFragment : Fragment() {
+class NotificationsFragment : Fragment(), RecipeAdapter.OnItemClickListener  {
 
     private var _binding: FragmentNotificationsBinding? = null
     private val binding get() = _binding!!
+
     private lateinit var recyclerView: RecyclerView
     private lateinit var recipeAdapter: RecipeAdapter
     private val recipeList = mutableListOf<Recipe>()
@@ -36,7 +37,7 @@ class NotificationsFragment : Fragment() {
 
         recyclerView = binding.recycleView // Убедитесь, что у вас есть RecyclerView в вашем XML
         recyclerView.layoutManager = LinearLayoutManager(context)
-        recipeAdapter = RecipeAdapter(recipeList)
+        recipeAdapter = RecipeAdapter(recipeList, this)
         recyclerView.adapter = recipeAdapter
 
         setupButtonListeners()

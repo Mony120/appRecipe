@@ -14,10 +14,11 @@ import com.example.apprecipe.databinding.FragmentHomeBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(), RecipeAdapter.OnItemClickListener {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
+
     private lateinit var recyclerView: RecyclerView
     private lateinit var recipeAdapter: RecipeAdapter
     private val recipeList = mutableListOf<Recipe>()
@@ -30,7 +31,7 @@ class HomeFragment : Fragment() {
         val root: View = binding.root
 
         recyclerView = binding.homeRecycleView
-        recipeAdapter = RecipeAdapter(recipeList)
+        recipeAdapter = RecipeAdapter(recipeList, this)
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter = recipeAdapter
 

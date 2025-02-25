@@ -1,5 +1,7 @@
 package com.example.apprecipe
 
+import java.io.Serializable
+
 data class Recipe(
     var url: String? = null,    // URL изображения
     var name: String? = null,   // Название рецепта
@@ -8,4 +10,4 @@ data class Recipe(
     var ingredients: String? = null, // Ингредиенты
     var kbzy: String? = null,     // Дополнительная информация
     var id: String? = null
-)
+): Serializable
