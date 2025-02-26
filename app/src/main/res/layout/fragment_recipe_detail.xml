@@ -1,156 +1,192 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="wrap_content"
+     android:layout_width="match_parent">
+    <ImageButton
+        android:id="@+id/backButton"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/baseline_arrow_back"
+        android:elevation="1dp"
+        android:background="@null"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <LinearLayout
+    <ImageButton
+        android:id="@+id/favorite_button"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@null"
+
+
+        android:src="@drawable/baseline_favorite_border_24"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp"
-        android:gravity="center">
-        <FrameLayout
+        android:layout_height="match_parent"
+        app:layout_constraintTop_toBottomOf="@+id/backButton">
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:padding="8dp"
-            android:background="@drawable/rounded_frame">
-            <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/imageView"
-                android:src="@drawable/foodone"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+
+            android:orientation="vertical"
+            android:padding="5dp">
+
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                app:shapeAppearanceOverlay="@style/ShapeAppearance"/>
-        </FrameLayout>
+                android:layout_height="200dp"
+                android:background="@drawable/rounded_frame"
+                android:padding="8dp">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Все рецеты рассчитаны на 4 порции"
-            android:textStyle="normal"
-            android:textSize="10sp"
-            android:textColor="?attr/textFillColor"
-            android:alpha="0.6"/>
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/foodone"
+                    app:shapeAppearanceOverlay="@style/ShapeAppearance" />
+            </FrameLayout>
 
-        <TextView
-            android:id="@+id/name_recipe"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="24sp"
-            android:text="Ghbdt Прваиет"
-            android:fontFamily="sans-serif-condensed"
-            android:textStyle="bold"
-            android:layout_marginTop="8dp"
-            android:textColor="?attr/textFillColor"/>
-
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="20dp"
-            app:cardBackgroundColor="@color/white"
-            app:cardElevation="10dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp">
-            <LinearLayout
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Ингредиенты"
-                    android:textStyle="bold"
-                    android:textSize="25sp"
+                android:alpha="0.6"
+                android:text="Все рецеты рассчитаны на 4 порции"
+                android:textColor="?attr/textFillColor"
+                android:textSize="10sp"
+                android:textStyle="normal" />
 
-                    android:fontFamily="sans-serif-condensed"
-                    android:textColor="@color/black"
-                    android:padding="8dp"/>
+            <TextView
+                android:id="@+id/name_recipe"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="sans-serif-condensed"
+                android:text="Ghbdt Прваиет"
+                android:textColor="?attr/textFillColor"
+                android:textSize="24sp"
+                android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/ingTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="24sp"
-                    android:textColor="@color/black"
-                    android:padding="8dp"/>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="20dp"
-            app:cardBackgroundColor="@color/white"
-            app:cardElevation="10dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp">
-            <LinearLayout
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
-                <TextView
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="10dp">
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Процесс готовки"
-                    android:textStyle="bold"
-                    android:fontFamily="sans-serif-condensed"
-                    android:textSize="25sp"
-                    android:padding="8dp"
-                    android:textColor="@color/black" />
+                    android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/cookTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    android:padding="8dp"
-                    android:textColor="@color/black"/>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-condensed"
+                        android:padding="8dp"
+                        android:text="Ингредиенты"
 
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="20dp"
-            app:cardBackgroundColor="@color/white"
-            app:cardElevation="10dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp">
-            <LinearLayout
+                        android:textColor="@color/black"
+                        android:textSize="25sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/ingTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="8dp"
+                        android:textColor="@color/black"
+                        android:textSize="24sp" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
-                <TextView
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="10dp">
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Пищевая ценность"
-                    android:fontFamily="sans-serif-condensed"
-                    android:textStyle="bold"
-                    android:textSize="25sp"
-                    android:padding="8dp"
-                    android:textColor="@color/black" />
-                <TextView
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-condensed"
+                        android:padding="8dp"
+                        android:text="Процесс готовки"
+                        android:textColor="@color/black"
+                        android:textSize="25sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/cookTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="8dp"
+                        android:textColor="@color/black"
+                        android:textSize="16sp" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="10dp">
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="На 100 грамм"
-                    android:textStyle="normal"
-                    android:textSize="15sp"
-                    android:paddingBottom="8dp"
-                    android:paddingEnd="8dp"
-                    android:paddingStart="8dp"
-                    android:textColor="@color/black"
-                    android:alpha="0.6"/>
+                    android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/callTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="16sp"
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-condensed"
+                        android:padding="8dp"
+                        android:text="Пищевая ценность"
+                        android:textColor="@color/black"
+                        android:textSize="25sp"
+                        android:textStyle="bold" />
 
-                    android:textColor="@color/black"
-                    android:padding="8dp"/>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:alpha="0.6"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="8dp"
+                        android:paddingBottom="8dp"
+                        android:text="На 100 грамм"
+                        android:textColor="@color/black"
+                        android:textSize="15sp"
+                        android:textStyle="normal" />
 
-    </LinearLayout>
-</ScrollView>
+                    <TextView
+                        android:id="@+id/kbzyTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="8dp"
+
+                        android:textColor="@color/black"
+                        android:textSize="16sp" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>
