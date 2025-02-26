@@ -1,5 +1,6 @@
 package com.example.apprecipe.ui.notifications
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -15,10 +16,11 @@ import com.example.apprecipe.R
 import com.example.apprecipe.Recipe
 import com.example.apprecipe.RecipeAdapter
 import com.example.apprecipe.databinding.FragmentNotificationsBinding
+import com.example.apprecipe.ui.RecipeDetailActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
-class NotificationsFragment : Fragment(), RecipeAdapter.OnItemClickListener  {
+class NotificationsFragment : Fragment(), RecipeAdapter.OnItemClickListener {
 
     private var _binding: FragmentNotificationsBinding? = null
     private val binding get() = _binding!!
@@ -110,5 +112,13 @@ class NotificationsFragment : Fragment(), RecipeAdapter.OnItemClickListener  {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onItemClick(recipe: Recipe) {
+        val bundle = Bundle().apply {
+            putSerializable("selected_recipe", recipe)
+        }
+        findNavController().navigate(R.id.action_notificationsFragment_to_recipeDetailFragment, bundle)
+
     }
 }

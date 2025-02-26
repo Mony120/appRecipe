@@ -1,16 +1,20 @@
 package com.example.apprecipe.ui.home
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.apprecipe.R
 import com.example.apprecipe.Recipe
 import com.example.apprecipe.RecipeAdapter
 import com.example.apprecipe.databinding.FragmentHomeBinding
+import com.example.apprecipe.ui.RecipeDetailActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
@@ -94,9 +98,20 @@ class HomeFragment : Fragment(), RecipeAdapter.OnItemClickListener {
             }
         })
     }
+    override fun onItemClick(recipe: Recipe) {
+        val bundle = Bundle().apply {
+            putSerializable("selected_recipe", recipe)
+        }
+        findNavController().navigate(R.id.action_homeFragment_to_RecipeDetailFragment, bundle)
+
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
+
+
+
+
 }
