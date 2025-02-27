@@ -7,13 +7,22 @@
     tools:context=".ui.settings.SettingFragment">
 
     <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        app:cardBackgroundColor="?attr/colorOnPrimary"
+        app:cardCornerRadius="20dp"
+        android:layout_marginBottom="10dp"
+        app:layout_constraintBottom_toTopOf="@+id/cdSwith"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+    <androidx.cardview.widget.CardView
         android:id="@+id/cdImage"
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:layout_marginTop="10dp"
         app:cardCornerRadius="70dp"
         app:cardElevation="10dp"
-
+        android:elevation="1dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -38,6 +47,8 @@
         android:text="Загрузка"
         android:textSize="20sp"
         android:alpha="0.5"
+        android:elevation="2dp"
+        android:layout_marginTop="5dp"
         android:textColor="?attr/textFillColor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -49,6 +60,8 @@
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-condensed-light"
         android:text="Загрузка"
+        android:elevation="2dp"
+        android:layout_marginTop="5dp"
         android:textColor="?attr/textFillColor"
         android:textSize="20sp"
         android:textStyle="bold"
@@ -66,23 +79,21 @@
         android:text="Выйти"
         android:textColor="?attr/textFillColor"
         app:cornerRadius="20dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cdSwith" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cdSwith"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:backgroundTint="?attr/colorOnPrimary"
+        android:backgroundTint="?attr/colorOnContainer"
         app:cardCornerRadius="20dp"
         android:layout_marginTop="10dp"
         app:cardElevation="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/view">
+        app:layout_constraintTop_toBottomOf="@+id/btn_ChangeProf">
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -117,14 +128,7 @@ android:paddingStart="8dp"
 </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 
-    <View
-        android:id="@+id/view"
-        android:layout_width="match_parent"
-        android:layout_height="3dp"
 
-        android:background="?attr/colorAccent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_ChangeProf" />
 
     <Button
         android:id="@+id/btn_ChangeProf"
@@ -134,18 +138,12 @@ android:paddingStart="8dp"
         android:text="Редактировать аватарку"
         android:textColor="?attr/textFillColor"
         app:cornerRadius="20dp"
-
+        android:elevation="1dp"
+        android:layout_marginTop="5dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/view2" />
-    <View
-        android:id="@+id/view2"
-        android:layout_width="match_parent"
-        android:layout_height="3dp"
-
-        android:background="?attr/colorAccent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_name" />
+
 
 
 
