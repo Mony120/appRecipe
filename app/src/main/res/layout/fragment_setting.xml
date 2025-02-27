@@ -75,7 +75,7 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/cdSwith"
         android:layout_width="match_parent"
-        android:layout_height="30dp"
+        android:layout_height="40dp"
         android:backgroundTint="?attr/colorOnPrimary"
         app:cardCornerRadius="20dp"
         android:layout_marginTop="10dp"
@@ -85,7 +85,8 @@
         app:layout_constraintTop_toBottomOf="@+id/view">
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_gravity="center">
 
     <Switch
         android:id="@+id/themeSwitch"

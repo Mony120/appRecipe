@@ -9,7 +9,11 @@
         android:id="@+id/navigation_home"
         android:name="com.example.apprecipe.ui.home.HomeFragment"
         android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_RecipeDetailFragment"
+            app:destination="@id/RecipeDetailFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_dashboard"
@@ -21,7 +25,11 @@
         android:id="@+id/navigation_notifications"
         android:name="com.example.apprecipe.ui.notifications.NotificationsFragment"
         android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        tools:layout="@layout/fragment_notifications" >
+        <action
+            android:id="@+id/action_notificationsFragment_to_recipeDetailFragment"
+            app:destination="@id/RecipeDetailFragment" />
+    </fragment>
     <fragment
         android:id="@+id/navigation_setting"
         android:name="com.example.apprecipe.ui.settings.SettingFragment"
@@ -38,4 +46,8 @@
         android:name="com.example.apprecipe.ui.settings.RegFragment"
         android:label="рег"
         tools:layout="@layout/fragment_reg" />
+    <fragment
+        android:id="@+id/RecipeDetailFragment"
+        android:name="com.example.apprecipe.ui.RecipeDetailFragment"
+        android:label="Recipe Detail" />
 </navigation>

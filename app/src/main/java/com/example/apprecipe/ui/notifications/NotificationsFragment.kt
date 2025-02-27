@@ -1,5 +1,6 @@
 package com.example.apprecipe.ui.notifications
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -15,13 +16,15 @@ import com.example.apprecipe.R
 import com.example.apprecipe.Recipe
 import com.example.apprecipe.RecipeAdapter
 import com.example.apprecipe.databinding.FragmentNotificationsBinding
+import com.example.apprecipe.ui.RecipeDetailActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
-class NotificationsFragment : Fragment() {
+class NotificationsFragment : Fragment(), RecipeAdapter.OnItemClickListener {
 
     private var _binding: FragmentNotificationsBinding? = null
     private val binding get() = _binding!!
+
     private lateinit var recyclerView: RecyclerView
     private lateinit var recipeAdapter: RecipeAdapter
     private val recipeList = mutableListOf<Recipe>()
@@ -36,7 +39,7 @@ class NotificationsFragment : Fragment() {
 
         recyclerView = binding.recycleView // Убедитесь, что у вас есть RecyclerView в вашем XML
         recyclerView.layoutManager = LinearLayoutManager(context)
-        recipeAdapter = RecipeAdapter(recipeList)
+        recipeAdapter = RecipeAdapter(recipeList, this)
         recyclerView.adapter = recipeAdapter
 
         setupButtonListeners()
@@ -109,5 +112,13 @@ class NotificationsFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onItemClick(recipe: Recipe) {
+        val bundle = Bundle().apply {
+            putSerializable("selected_recipe", recipe)
+        }
+        findNavController().navigate(R.id.action_notificationsFragment_to_recipeDetailFragment, bundle)
+
     }
 }

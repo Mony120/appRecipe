@@ -11,13 +11,18 @@ import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
-class RecipeAdapter(private val recipeList: List<Recipe>) : RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder>() {
+class RecipeAdapter(private val recipeList: List<Recipe>,private val itemClickListener: OnItemClickListener)
+    : RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder>() {
 
     class RecipeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val nameTextView: TextView = itemView.findViewById(R.id.name_recipe)
         val timeTextView: TextView = itemView.findViewById(R.id.time)
         val imageView: ImageView = itemView.findViewById(R.id.header_image)
         val favoriteButton: ImageButton = itemView.findViewById(R.id.favorite_button) // Добавляем кнопку
+
+    }
+    interface OnItemClickListener {
+        fun onItemClick(recipe: Recipe)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecipeViewHolder {
@@ -30,11 +35,15 @@ class RecipeAdapter(private val recipeList: List<Recipe>) : RecyclerView.Adapter
         holder.nameTextView.text = recipe.name
         holder.timeTextView.text = recipe.time
 
+
         // Используйте Glide для загрузки изображения
         Glide.with(holder.itemView.context)
             .load(recipe.url)
             .into(holder.imageView)
 
+        holder.itemView.setOnClickListener {// Устанавливаем обработчик клика на элемент
+            itemClickListener.onItemClick(recipe)
+        }
         // Установите состояние кнопки "Избранное"
         updateFavoriteButtonState(holder.favoriteButton, recipe.id)
 
