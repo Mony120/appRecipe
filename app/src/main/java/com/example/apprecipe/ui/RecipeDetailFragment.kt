@@ -1,6 +1,7 @@
 package com.example.apprecipe.ui
 
 import android.os.Bundle
+import com.example.apprecipe.R
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
