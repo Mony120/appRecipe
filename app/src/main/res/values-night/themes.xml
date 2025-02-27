@@ -7,5 +7,6 @@
         <item name="textFillColor">@color/colorTextDark</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="colorOnPrimary">@color/colorOnPrimaryDark</item>
+        <item name="colorOnContainer">@color/colorOnContainerDark</item>
     </style>
 </resources>
