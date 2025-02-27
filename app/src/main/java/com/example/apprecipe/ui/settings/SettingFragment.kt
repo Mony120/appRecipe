@@ -93,7 +93,7 @@ class SettingFragment : Fragment() {
 
         if (user != null) {
             if (user.isEmailVerified) { // Проверка, подтвержден ли email
-                emailTextView.text = "Email: ${user.email}"
+                emailTextView.text = "${user.email}"
                 getUserName(user.uid, loginTextView)
                 loadImageFromFirebase(user.uid) // Загрузка изображения профиля
             } else {
@@ -142,7 +142,7 @@ class SettingFragment : Fragment() {
                         null
                     }
                 }
-                loginTextView.text = "Имя: ${name ?: "Неизвестно"}"
+                loginTextView.text = "${name ?: "Неизвестно"}"
             } catch (e: Exception) {
                 Log.w("SettingFragment", "Ошибка при получении данных", e)
             }

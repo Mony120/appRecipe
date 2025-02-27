@@ -1,9 +1,9 @@
 package com.example.apprecipe.ui
 
 import android.os.Bundle
-import com.example.apprecipe.R
 import android.view.LayoutInflater
 import android.view.View
+import com.example.apprecipe.R
 import android.view.ViewGroup
 import android.widget.ImageButton
 import androidx.fragment.app.Fragment
@@ -13,6 +13,11 @@ import com.example.apprecipe.Recipe
 import com.example.apprecipe.databinding.FragmentRecipeDetailBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.net.URL
 
 class RecipeDetailFragment : Fragment() {
 
@@ -59,14 +64,32 @@ class RecipeDetailFragment : Fragment() {
             .load(recipe.url)
             .into(binding.imageView)
 
-        // Устанавливаем данные рецепта
+        // Устанавливаем название рецепта
         binding.nameRecipe.text = recipe.name
-        binding.ingTextView.text = recipe.ingredients
-        binding.cookTextView.text = recipe.cooking
-        binding.kbzyTextView.text = recipe.kbzy
+
+        // Загружаем и устанавливаем текст для ingredients, cooking и kbzy
+        CoroutineScope(Dispatchers.Main).launch {
+            val ingredientsText = loadTextFromUrl(recipe.ingridients.toString())
+            val cookingText = loadTextFromUrl(recipe.cooking.toString())
+            val kbzyText = loadTextFromUrl(recipe.kbzy.toString())
+
+            binding.ingTextView.text = ingredientsText ?: "Не удалось загрузить ингредиенты"
+            binding.cookTextView.text = cookingText ?: "Не удалось загрузить способ приготовления"
+            binding.kbzyTextView.text = kbzyText ?: "Не удалось загрузить КБЖУ"
+        }
 
         // Обработка нажатия на кнопку "Назад"
         binding.backButton.setOnClickListener { navigateBack() }
+    }
+
+    private suspend fun loadTextFromUrl(url: String): String? {
+        return withContext(Dispatchers.IO) {
+            try {
+                URL(url).readText() // Загружаем текст по URL
+            } catch (e: Exception) {
+                null // В случае ошибки возвращаем null
+            }
+        }
     }
 
     private fun navigateBack() {
@@ -97,7 +120,7 @@ class RecipeDetailFragment : Fragment() {
     }
 
     private fun updateFavoriteButtonState(button: ImageButton, recipeId: String?) {
-        val userId = FirebaseAuth.getInstance().currentUser ?.uid
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
         if (userId != null && recipeId != null) {
             val favoritesRef = FirebaseDatabase.getInstance().getReference("users/$userId/favorites")
             favoritesRef.child(recipeId).addListenerForSingleValueEvent(object : ValueEventListener {
