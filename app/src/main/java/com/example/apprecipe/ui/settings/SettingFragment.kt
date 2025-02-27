@@ -150,7 +150,7 @@ class SettingFragment : Fragment() {
     }
 
     private fun saveImageToFirebase(bitmap: Bitmap) {
-        val userId = auth.currentUser ?.uid ?: return
+        val userId = auth.currentUser?.uid ?: return
 
         // Преобразуем Bitmap в строку Base64
         val byteArrayOutputStream = ByteArrayOutputStream()
@@ -158,8 +158,8 @@ class SettingFragment : Fragment() {
         val byteArray = byteArrayOutputStream.toByteArray()
         val encodedImage = Base64.encodeToString(byteArray, Base64.DEFAULT)
 
-        // Сохраняем строку в Firebase
-        myRef.child(userId).child("profileImage").setValue(encodedImage)
+        // Сохраняем строку в Firebase по пути profile/image
+        myRef.child(userId).child("profile").child("image").setValue(encodedImage)
             .addOnSuccessListener {
                 Toast.makeText(requireContext(), "Изображение успешно сохранено", Toast.LENGTH_SHORT).show()
             }
@@ -169,20 +169,20 @@ class SettingFragment : Fragment() {
     }
 
     private fun loadImageFromFirebase(userId: String) {
-        myRef.child(userId).child("profileImage").get()
+        // Загружаем изображение из profile/image
+        myRef.child(userId).child("profile").child("image").get()
             .addOnSuccessListener { dataSnapshot ->
                 val encodedImage = dataSnapshot.getValue(String::class.java)
                 if (encodedImage != null) {
-                    // Преобразуем строку обратно в изображение
                     val decodedBytes = Base64.decode(encodedImage, Base64.DEFAULT)
                     val bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
-                    imageViewProfile.setImageBitmap(bitmap) // Устанавливаем загруженное изображение в ImageView
+                    imageViewProfile.setImageBitmap(bitmap)
                 }
             }
             .addOnFailureListener { e ->
                 Log.w("SettingFragment", "Ошибка при загрузке изображения", e)
             }
-    }
+}
 
     private fun logOut() {
         auth.signOut()
