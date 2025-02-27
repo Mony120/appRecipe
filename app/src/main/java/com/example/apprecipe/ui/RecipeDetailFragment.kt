@@ -3,17 +3,17 @@ package com.example.apprecipe.ui
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import com.example.apprecipe.R
 import android.view.ViewGroup
 import android.widget.ImageButton
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.example.apprecipe.MainActivity
 import com.example.apprecipe.Recipe
 import com.example.apprecipe.databinding.FragmentRecipeDetailBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-import kotlinx.coroutines.CoroutineScope
+import com.example.apprecipe.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -22,7 +22,8 @@ import java.net.URL
 class RecipeDetailFragment : Fragment() {
 
     private var _binding: FragmentRecipeDetailBinding? = null
-    private val binding get() = _binding!!
+    private val binding: FragmentRecipeDetailBinding
+        get() = _binding ?: throw IllegalStateException("Binding accessed after destroy")
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,7 +42,7 @@ class RecipeDetailFragment : Fragment() {
 
         // Получаем переданный рецепт из аргументов
         arguments?.getSerializable("selected_recipe")?.let { recipe ->
-            val selectedRecipe = recipe as? Recipe ?: return
+            val selectedRecipe = recipe as? Recipe ?: return@let
             updateUI(selectedRecipe)
 
             // Обработка нажатия на кнопку "Избранное"
@@ -60,7 +61,7 @@ class RecipeDetailFragment : Fragment() {
 
     private fun updateUI(recipe: Recipe) {
         // Загружаем изображение с помощью Glide
-        Glide.with(this)
+        Glide.with(requireView())
             .load(recipe.url)
             .into(binding.imageView)
 
@@ -68,14 +69,17 @@ class RecipeDetailFragment : Fragment() {
         binding.nameRecipe.text = recipe.name
 
         // Загружаем и устанавливаем текст для ingredients, cooking и kbzy
-        CoroutineScope(Dispatchers.Main).launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             val ingredientsText = loadTextFromUrl(recipe.ingridients.toString())
             val cookingText = loadTextFromUrl(recipe.cooking.toString())
             val kbzyText = loadTextFromUrl(recipe.kbzy.toString())
 
-            binding.ingTextView.text = ingredientsText ?: "Не удалось загрузить ингредиенты"
-            binding.cookTextView.text = cookingText ?: "Не удалось загрузить способ приготовления"
-            binding.kbzyTextView.text = kbzyText ?: "Не удалось загрузить КБЖУ"
+            // Проверяем, что фрагмент еще "живой"
+            if (isAdded) {
+                binding.ingTextView.text = ingredientsText ?: "Не удалось загрузить ингредиенты"
+                binding.cookTextView.text = cookingText ?: "Не удалось загрузить способ приготовления"
+                binding.kbzyTextView.text = kbzyText ?: "Не удалось загрузить КБЖУ"
+            }
         }
 
         // Обработка нажатия на кнопку "Назад"
@@ -85,6 +89,7 @@ class RecipeDetailFragment : Fragment() {
     private suspend fun loadTextFromUrl(url: String): String? {
         return withContext(Dispatchers.IO) {
             try {
+                if (URL(url).protocol !in listOf("http", "https")) return@withContext null
                 URL(url).readText() // Загружаем текст по URL
             } catch (e: Exception) {
                 null // В случае ошибки возвращаем null
@@ -102,6 +107,8 @@ class RecipeDetailFragment : Fragment() {
             val favoritesRef = FirebaseDatabase.getInstance().getReference("users/$userId/favorites")
             favoritesRef.child(recipeId).addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    if (!isAdded) return // Прерываем, если фрагмент уничтожен
+
                     if (dataSnapshot.exists()) {
                         // Если рецепт уже в избранном, удаляем его
                         favoritesRef.child(recipeId).removeValue()
@@ -113,6 +120,7 @@ class RecipeDetailFragment : Fragment() {
                 }
 
                 override fun onCancelled(databaseError: DatabaseError) {
+                    if (!isAdded) return
                     // Обработка ошибок
                 }
             })
@@ -120,16 +128,20 @@ class RecipeDetailFragment : Fragment() {
     }
 
     private fun updateFavoriteButtonState(button: ImageButton, recipeId: String?) {
+        if (!isAdded) return // Проверка перед выполнением
+
         val userId = FirebaseAuth.getInstance().currentUser?.uid
         if (userId != null && recipeId != null) {
             val favoritesRef = FirebaseDatabase.getInstance().getReference("users/$userId/favorites")
             favoritesRef.child(recipeId).addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    if (!isAdded) return
                     val isFavorite = dataSnapshot.exists() // Проверка, существует ли рецепт в избранном
                     button.setImageResource(if (isFavorite) R.drawable.baseline_favorite else R.drawable.baseline_favorite_border_24) // Изменение иконки
                 }
 
                 override fun onCancelled(databaseError: DatabaseError) {
+                    if (!isAdded) return
                     // Обработка ошибок
                 }
             })

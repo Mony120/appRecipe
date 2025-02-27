@@ -148,7 +148,7 @@ class DashboardFragment : Fragment() {
             val editText = EditText(requireContext())
             editText.setText(currentNote.text)
 
-            AlertDialog.Builder(requireContext())
+            AlertDialog.Builder(requireContext(), R.style.MyDialogTheme)
                 .setTitle("Редактировать заметку")
                 .setView(editText)
                 .setPositiveButton("Сохранить") { _, _ ->
@@ -180,7 +180,7 @@ class DashboardFragment : Fragment() {
 
         // Метод для отображения диалогового окна подтверждения удаления
         private fun showDeleteConfirmationDialog(position: Int) {
-            AlertDialog.Builder(requireContext())
+            AlertDialog.Builder(requireContext(), R.style.MyDialogTheme)
                 .setTitle("Удалить заметку")
                 .setMessage("Вы уверены, что хотите удалить эту заметку?")
                 .setPositiveButton("Да") { _, _ -> removeNoteAt(position) }

@@ -10,6 +10,8 @@
     <color name="pink">#FFC7FA</color>
     <color name="pinkIcon">#E600FF</color>
     <color name="violet">#FF3BF6</color>
+    <color name="green">#12A600</color>
+    <color name="red">#FF3B3B</color>
 
     <color name="colorPrimarySecond">#C78367</color>
     <color name="colorAccent">#8C2820</color>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="MyDialogTheme" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
+    <!-- Цвет кнопок -->
+    <item name="buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>
+    <item name="buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
+</style>
+
+    <style name="PositiveButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/green</item>
+    </style>
+
+    <style name="NegativeButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/red</item>
+    </style>
+</resources>
