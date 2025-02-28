@@ -1,32 +1,48 @@
 package com.example.apprecipe
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
-class RecipeAdapter(private val recipeList: List<Recipe>,private val itemClickListener: OnItemClickListener)
-    : RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder>() {
+class RecipeAdapter(
+    private var recipeList: MutableList<Recipe>, // Изменено на MutableList
+    private val itemClickListener: OnItemClickListener
+) : RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder>() {
+
+    private val auth = FirebaseAuth.getInstance()
+    private val database = FirebaseDatabase.getInstance()
+
+    // Добавлен метод для обновления списка
+    fun updateList(newList: List<Recipe>) {
+        recipeList.clear()
+        recipeList.addAll(newList)
+        notifyDataSetChanged()
+    }
 
     class RecipeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val nameTextView: TextView = itemView.findViewById(R.id.name_recipe)
         val timeTextView: TextView = itemView.findViewById(R.id.time)
         val imageView: ImageView = itemView.findViewById(R.id.header_image)
-        val favoriteButton: ImageButton = itemView.findViewById(R.id.favorite_button) // Добавляем кнопку
-
+        val favoriteButton: ImageButton = itemView.findViewById(R.id.favorite_button)
     }
+
     interface OnItemClickListener {
         fun onItemClick(recipe: Recipe)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecipeViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.list_item, parent, false)
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.list_item, parent, false)
         return RecipeViewHolder(view)
     }
 
@@ -35,70 +51,83 @@ class RecipeAdapter(private val recipeList: List<Recipe>,private val itemClickLi
         holder.nameTextView.text = recipe.name
         holder.timeTextView.text = recipe.time
 
-
-        // Используйте Glide для загрузки изображения
+        // Загрузка изображения с обработкой ошибок
         Glide.with(holder.itemView.context)
             .load(recipe.url)
+            .transition(DrawableTransitionOptions.withCrossFade())
+            //.placeholder(R.drawable.placeholder_image)
+            //.error(R.drawable.error_image)
             .into(holder.imageView)
 
-        holder.itemView.setOnClickListener {// Устанавливаем обработчик клика на элемент
+        holder.itemView.setOnClickListener {
             itemClickListener.onItemClick(recipe)
         }
-        // Установите состояние кнопки "Избранное"
-        updateFavoriteButtonState(holder.favoriteButton, recipe.id)
 
-        // Обработка нажатия на кнопку "Избранное"
+        // Обновление состояния кнопки с проверкой контекста
+        if (holder.itemView.context != null) {
+            updateFavoriteButtonState(holder.favoriteButton, recipe.id)
+        }
+
         holder.favoriteButton.setOnClickListener {
             recipe.id?.let { id ->
-                toggleFavorite(id, holder.favoriteButton) // Передаем id только если он не null
+                toggleFavorite(id, holder.favoriteButton)
             }
         }
     }
 
-    override fun getItemCount(): Int {
-        return recipeList.size
-    }
+    override fun getItemCount(): Int = recipeList.size
 
     private fun toggleFavorite(recipeId: String, button: ImageButton) {
-        val userId = FirebaseAuth.getInstance().currentUser ?.uid
-        if (userId != null) {
-            val favoritesRef = FirebaseDatabase.getInstance().getReference("users/$userId/favorites")
-            favoritesRef.child(recipeId).addListenerForSingleValueEvent(object : ValueEventListener {
+        val userId = auth.currentUser?.uid ?: return
+        val favoritesRef = database.getReference("users/$userId/favorites")
+
+        favoritesRef.child(recipeId).addListenerForSingleValueEvent(
+            object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     if (dataSnapshot.exists()) {
-                        // Если рецепт уже в избранном, удаляем его
                         favoritesRef.child(recipeId).removeValue()
                     } else {
-                        // Если рецепта нет в избранном, добавляем его
                         favoritesRef.child(recipeId).setValue(true)
                     }
-                    updateFavoriteButtonState(button, recipeId) // Обновляем состояние кнопки
+                    updateFavoriteButtonState(button, recipeId)
                 }
 
                 override fun onCancelled(databaseError: DatabaseError) {
-                    // Обработка ошибок
+                    Log.e("RecipeAdapter", "Database error: ${databaseError.message}")
                 }
             })
-        }
     }
 
     private fun updateFavoriteButtonState(button: ImageButton, recipeId: String?) {
-        val userId = FirebaseAuth.getInstance().currentUser ?.uid
-        if (userId != null && recipeId != null) {
-            val favoritesRef = FirebaseDatabase.getInstance().getReference("users/$userId/favorites")
-            favoritesRef.child(recipeId).addListenerForSingleValueEvent(object : ValueEventListener {
+        val userId = auth.currentUser?.uid ?: run {
+            button.setImageResource(R.drawable.baseline_favorite_border_24)
+            return
+        }
+
+        recipeId ?: run {
+            button.setImageResource(R.drawable.baseline_favorite_border_24)
+            return
+        }
+
+        database.getReference("users/$userId/favorites/$recipeId")
+            .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    val isFavorite = dataSnapshot.exists() // Проверка, существует ли рецепт в избранном
-                    button.setImageResource(if (isFavorite) R.drawable.baseline_favorite else R.drawable.baseline_favorite_border_24) // Изменение иконки
+                    val isFavorite = dataSnapshot.exists()
+                    val icon = if (isFavorite) {
+                        R.drawable.baseline_favorite
+                    } else {
+                        R.drawable.baseline_favorite_border_24
+                    }
+
+                    // Безопасное обновление иконки
+                    button.post {
+                        button.setImageResource(icon)
+                    }
                 }
 
                 override fun onCancelled(databaseError: DatabaseError) {
-                    // Обработка ошибок
+                    Log.e("RecipeAdapter", "Favorite check failed: ${databaseError.message}")
                 }
             })
-        } else {
-            // Установите иконку по умолчанию, если id или userId null
-            button.setImageResource(R.drawable.baseline_favorite_border_24)
-        }
     }
 }

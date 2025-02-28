@@ -107,7 +107,7 @@
 
             <Button
                 android:id="@+id/btnSoup"
-                android:layout_width="90dp"
+                android:layout_width="wrap_content"
                 android:layout_height="50dp"
 
                 android:text="Супы"
@@ -118,7 +118,7 @@
 
             <Button
                 android:id="@+id/btnSalad"
-                android:layout_width="90dp"
+                android:layout_width="wrap_content"
                 android:layout_height="50dp"
                 android:text="Салаты"
                 android:textSize="10sp"
@@ -149,6 +149,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="50dp"
                 android:text="Выпечка"
+                android:textSize="10sp"
+                android:layout_marginStart="5dp"
+                android:backgroundTint="?attr/colorAccent"
+                app:cornerRadius="20dp"/>
+            <Button
+                android:id="@+id/btnMeat"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:text="Мясо"
                 android:textSize="10sp"
                 android:layout_marginStart="5dp"
                 android:backgroundTint="?attr/colorAccent"
