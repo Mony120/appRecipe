@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.example.apprecipe.MainActivity
 import com.example.apprecipe.Recipe
@@ -14,10 +13,6 @@ import com.example.apprecipe.databinding.FragmentRecipeDetailBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.example.apprecipe.R
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.net.URL
 
 class RecipeDetailFragment : Fragment() {
 
