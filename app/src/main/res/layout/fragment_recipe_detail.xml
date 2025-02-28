@@ -30,13 +30,12 @@
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:fontFamily="sans-serif-condensed"
+            android:fontFamily="sans-serif-condensed-light"
+            android:textStyle="bold"
             android:text="Ghbdt Прваиет"
-            android:layout_gravity="center"
             android:gravity="center"
             android:textColor="?attr/textFillColor"
-            android:textSize="27sp"
-            android:textStyle="bold"
+            android:textSize="25sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -111,13 +110,13 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:fontFamily="sans-serif-condensed"
+                        android:fontFamily="sans-serif-condensed-light"
+                        android:textStyle="bold"
                         android:padding="8dp"
                         android:text="Ингредиенты"
-
                         android:textColor="@color/black"
                         android:textSize="25sp"
-                        android:textStyle="bold" />
+                       />
 
                     <TextView
                         android:id="@+id/ingTextView"
@@ -146,12 +145,13 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:fontFamily="sans-serif-condensed"
                         android:padding="8dp"
                         android:text="Процесс готовки"
                         android:textColor="@color/black"
                         android:textSize="25sp"
-                        android:textStyle="bold" />
+                        android:fontFamily="sans-serif-condensed-light"
+                        android:textStyle="bold"
+                         />
 
                     <TextView
                         android:id="@+id/cookTextView"
@@ -180,12 +180,13 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:fontFamily="sans-serif-condensed"
+                        android:fontFamily="sans-serif-condensed-light"
+                        android:textStyle="bold"
                         android:padding="8dp"
                         android:text="Пищевая ценность"
                         android:textColor="@color/black"
                         android:textSize="25sp"
-                        android:textStyle="bold" />
+                        />
 
                     <TextView
                         android:layout_width="match_parent"
@@ -197,7 +198,9 @@
                         android:text="На 100 грамм"
                         android:textColor="@color/black"
                         android:textSize="15sp"
-                        android:textStyle="normal" />
+                        android:fontFamily="sans-serif-condensed-light"
+                        android:textStyle="bold"
+                         />
 
                     <TextView
                         android:id="@+id/kbzyTextView"

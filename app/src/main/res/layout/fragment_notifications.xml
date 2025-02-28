@@ -101,7 +101,10 @@
                 android:text="Все"
                 android:textSize="10sp"
                 android:gravity="center"
+                android:textColor="@color/white"
                 android:layout_marginStart="5dp"
+                android:fontFamily="sans-serif-condensed-light"
+                android:textStyle="bold"
                 android:backgroundTint="?attr/colorAccent"
                 app:cornerRadius="20dp"/>
 
@@ -109,10 +112,12 @@
                 android:id="@+id/btnSoup"
                 android:layout_width="wrap_content"
                 android:layout_height="50dp"
-
+                android:textColor="@color/white"
                 android:text="Супы"
                 android:textSize="10sp"
                 android:layout_marginStart="5dp"
+                android:fontFamily="sans-serif-condensed-light"
+                android:textStyle="bold"
                 android:backgroundTint="?attr/colorAccent"
                 app:cornerRadius="20dp"/>
 
@@ -122,7 +127,10 @@
                 android:layout_height="50dp"
                 android:text="Салаты"
                 android:textSize="10sp"
+                android:textColor="@color/white"
                 android:layout_marginStart="5dp"
+                android:fontFamily="sans-serif-condensed-light"
+                android:textStyle="bold"
                 android:backgroundTint="?attr/colorAccent"
                 app:cornerRadius="20dp"/>
             <Button
@@ -131,7 +139,10 @@
                 android:layout_height="50dp"
                 android:text="Десерты"
                 android:textSize="10sp"
+                android:textColor="@color/white"
                 android:layout_marginStart="5dp"
+                android:fontFamily="sans-serif-condensed-light"
+                android:textStyle="bold"
                 android:backgroundTint="?attr/colorAccent"
                 app:cornerRadius="20dp"/>
             <Button
@@ -139,8 +150,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="50dp"
                 android:text="Гарниры"
+                android:textColor="@color/white"
                 android:textSize="10sp"
                 android:layout_marginStart="5dp"
+                android:fontFamily="sans-serif-condensed-light"
+                android:textStyle="bold"
                 android:backgroundTint="?attr/colorAccent"
                 app:cornerRadius="20dp"/>
 
@@ -149,8 +163,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="50dp"
                 android:text="Выпечка"
+                android:textColor="@color/white"
                 android:textSize="10sp"
                 android:layout_marginStart="5dp"
+                android:fontFamily="sans-serif-condensed-light"
+                android:textStyle="bold"
                 android:backgroundTint="?attr/colorAccent"
                 app:cornerRadius="20dp"/>
             <Button
@@ -158,8 +175,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="50dp"
                 android:text="Мясо"
+                android:textColor="@color/white"
                 android:textSize="10sp"
                 android:layout_marginStart="5dp"
+                android:fontFamily="sans-serif-condensed-light"
+                android:textStyle="bold"
                 android:backgroundTint="?attr/colorAccent"
                 app:cornerRadius="20dp"/>
 

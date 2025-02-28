@@ -1,6 +1,6 @@
 package com.example.apprecipe.ui.home
 
-import android.content.Intent
+import android.graphics.Rect
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,7 +14,6 @@ import com.example.apprecipe.R
 import com.example.apprecipe.Recipe
 import com.example.apprecipe.RecipeAdapter
 import com.example.apprecipe.databinding.FragmentHomeBinding
-import com.example.apprecipe.ui.RecipeDetailActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
@@ -26,9 +25,11 @@ class HomeFragment : Fragment(), RecipeAdapter.OnItemClickListener {
     private lateinit var recyclerView: RecyclerView
     private lateinit var recipeAdapter: RecipeAdapter
     private val recipeList = mutableListOf<Recipe>()
+    private val loadedRecipeIds = mutableSetOf<String>() // Для отслеживания загруженных рецептов
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
@@ -38,6 +39,8 @@ class HomeFragment : Fragment(), RecipeAdapter.OnItemClickListener {
         recipeAdapter = RecipeAdapter(recipeList, this)
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter = recipeAdapter
+        val spacingInPixels = resources.getDimensionPixelSize(R.dimen.card_spacing)
+        recyclerView.addItemDecoration(SpaceItemDecoration(spacingInPixels))
 
         loadFavoriteRecipes()
 
@@ -45,65 +48,71 @@ class HomeFragment : Fragment(), RecipeAdapter.OnItemClickListener {
     }
 
     private fun loadFavoriteRecipes() {
-        val userId = FirebaseAuth.getInstance().currentUser ?.uid
-        Log.d("HomeFragment", "User  ID: $userId") // Логируем User ID
-        if (userId != null) {
-            val favoritesRef = FirebaseDatabase.getInstance().getReference("users/$userId/favorites")
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        Log.d("HomeFragment", "User ID: $userId")
+
+        userId?.let { uid ->
+            val favoritesRef = FirebaseDatabase.getInstance()
+                .getReference("users/$uid/favorites")
+
             favoritesRef.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    recipeList.clear() // Очистите список перед добавлением новых данных
-                    Log.d("HomeFragment", "Избранные рецепты загружены: ${dataSnapshot.childrenCount}")
-                    if (dataSnapshot.exists()) {
-                        for (snapshot in dataSnapshot.children) {
-                            val recipeId = snapshot.key
-                            Log.d("HomeFragment", "ID рецепта: $recipeId") // Логируем ID рецепта
-                            recipeId?.let {
+                    recipeList.clear()
+                    loadedRecipeIds.clear()
+                    Log.d("HomeFragment", "Found ${dataSnapshot.childrenCount} favorites")
+
+                    dataSnapshot.children.forEach { snapshot ->
+                        val recipeId = snapshot.key
+                        Log.d("HomeFragment", "Processing recipe ID: $recipeId")
+
+                        recipeId?.let {
+                            if (!loadedRecipeIds.contains(it)) {
                                 getRecipeById(it)
                             }
                         }
-                    } else {
-                        Log.d("HomeFragment", "Нет избранных рецептов.")
                     }
                 }
 
                 override fun onCancelled(databaseError: DatabaseError) {
-                    Log.e("HomeFragment", "Ошибка загрузки избранных рецептов: ${databaseError.message}")
+                    Log.e("HomeFragment", "Error loading favorites: ${databaseError.message}")
                 }
             })
-        } else {
-            Log.d("HomeFragment", "Пользователь не авторизован.")
+        } ?: run {
+            Log.d("HomeFragment", "User not authenticated")
         }
     }
 
     private fun getRecipeById(recipeId: String) {
-        val recipesRef = FirebaseDatabase.getInstance().getReference("recipes")
-        recipesRef.orderByChild("id").equalTo(recipeId).addListenerForSingleValueEvent(object : ValueEventListener {
+        val recipeRef = FirebaseDatabase.getInstance()
+            .getReference("recipes/$recipeId")
+
+        recipeRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    for (snapshot in dataSnapshot.children) {
-                        val recipe = snapshot.getValue(Recipe::class.java)
-                        Log.d("HomeFragment", "Рецепт загружен: ${recipe?.name}") // Логируем загруженный рецепт
-                        recipe?.let {
-                            recipeList.add(it)
-                            recipeAdapter.notifyDataSetChanged() // Уведомляем адаптер об изменениях
-                        }
-                    }
-                } else {
-                    Log.d("HomeFragment", "Рецепт не найден по ID: $recipeId")
+                val recipe = dataSnapshot.getValue(Recipe::class.java)?.apply {
+                    id = dataSnapshot.key // Устанавливаем ID из ключа Firebase
                 }
+
+                recipe?.let {
+                    if (!loadedRecipeIds.contains(it.id)) {
+                        recipeList.add(it)
+                        loadedRecipeIds.add(it.id!!)
+                        recipeAdapter.notifyDataSetChanged()
+                        Log.d("HomeFragment", "Added recipe: ${it.name}")
+                    }
+                } ?: Log.d("HomeFragment", "Recipe not found: $recipeId")
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
-                Log.e("HomeFragment", "Ошибка получения рецепта: ${databaseError.message}")
+                Log.e("HomeFragment", "Error loading recipe: ${databaseError.message}")
             }
         })
     }
+
     override fun onItemClick(recipe: Recipe) {
         val bundle = Bundle().apply {
             putSerializable("selected_recipe", recipe)
         }
         findNavController().navigate(R.id.action_homeFragment_to_RecipeDetailFragment, bundle)
-
     }
 
     override fun onDestroyView() {
@@ -111,7 +120,14 @@ class HomeFragment : Fragment(), RecipeAdapter.OnItemClickListener {
         _binding = null
     }
 
-
-
-
+    class SpaceItemDecoration(private val space: Int) : RecyclerView.ItemDecoration() {
+        override fun getItemOffsets(
+            outRect: Rect,
+            view: View,
+            parent: RecyclerView,
+            state: RecyclerView.State
+        ) {
+            outRect.bottom = space
+        }
+    }
 }
