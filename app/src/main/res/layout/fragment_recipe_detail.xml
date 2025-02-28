@@ -209,7 +209,11 @@
                         android:textSize="16sp" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
-
+            <ImageView
+                android:layout_width="1dp"
+                android:layout_height="70dp"
+                android:src="@color/design_default_color_error"
+                />
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
