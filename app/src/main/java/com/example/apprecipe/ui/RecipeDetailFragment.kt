@@ -67,35 +67,17 @@ class RecipeDetailFragment : Fragment() {
 
         // Устанавливаем название рецепта
         binding.nameRecipe.text = recipe.name
+        binding.ingTextView.text = recipe.ingridients
+        binding.cookTextView.text = recipe.cooking
+        binding.kbzyTextView.text = recipe.kbzy
 
-        // Загружаем и устанавливаем текст для ingredients, cooking и kbzy
-        viewLifecycleOwner.lifecycleScope.launch {
-            val ingredientsText = loadTextFromUrl(recipe.ingridients.toString())
-            val cookingText = loadTextFromUrl(recipe.cooking.toString())
-            val kbzyText = loadTextFromUrl(recipe.kbzy.toString())
 
-            // Проверяем, что фрагмент еще "живой"
-            if (isAdded) {
-                binding.ingTextView.text = ingredientsText ?: "Не удалось загрузить ингредиенты"
-                binding.cookTextView.text = cookingText ?: "Не удалось загрузить способ приготовления"
-                binding.kbzyTextView.text = kbzyText ?: "Не удалось загрузить КБЖУ"
-            }
-        }
 
         // Обработка нажатия на кнопку "Назад"
         binding.backButton.setOnClickListener { navigateBack() }
     }
 
-    private suspend fun loadTextFromUrl(url: String): String? {
-        return withContext(Dispatchers.IO) {
-            try {
-                if (URL(url).protocol !in listOf("http", "https")) return@withContext null
-                URL(url).readText() // Загружаем текст по URL
-            } catch (e: Exception) {
-                null // В случае ошибки возвращаем null
-            }
-        }
-    }
+
 
     private fun navigateBack() {
         requireActivity().onBackPressed()
