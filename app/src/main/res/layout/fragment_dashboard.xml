@@ -87,9 +87,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Добавить заметку"
-                android:textColor="?attr/textFillColor"
+                android:textColor="@color/white"
                 android:layout_margin="15dp"
-
+                android:fontFamily="sans-serif-condensed-light"
+                android:textStyle="bold"
                 android:backgroundTint="?attr/colorAccent"/>
 
         </LinearLayout>

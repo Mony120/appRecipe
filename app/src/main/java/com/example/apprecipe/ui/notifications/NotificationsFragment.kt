@@ -1,5 +1,6 @@
 package com.example.apprecipe.ui.notifications
 
+import android.graphics.Rect
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -46,6 +47,9 @@ class NotificationsFragment : Fragment(), RecipeAdapter.OnItemClickListener {
         setupButtonListeners()
         setupFilterButtons()
         setupSearchView() // Добавлен вызов метода настройки SearchView
+
+        val spacingInPixels = resources.getDimensionPixelSize(R.dimen.card_spacing)
+        recyclerView.addItemDecoration(SpaceItemDecoration(spacingInPixels))
 
         val registrationPrompt: LinearLayout = binding.homeRegistrationPrompt
         checkCurrentUser(registrationPrompt)
@@ -187,5 +191,10 @@ class NotificationsFragment : Fragment(), RecipeAdapter.OnItemClickListener {
             putSerializable("selected_recipe", recipe)
         }
         findNavController().navigate(R.id.action_notificationsFragment_to_recipeDetailFragment, bundle)
+    }
+    class SpaceItemDecoration(private val space: Int) : RecyclerView.ItemDecoration() {
+        override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
+            outRect.bottom = space // Установка отступа снизу
+        }
     }
 }

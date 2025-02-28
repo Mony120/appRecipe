@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="350dp"
+    android:layout_height="290dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
     app:cardCornerRadius="70dp"
@@ -19,7 +19,7 @@
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="190dp"
             android:padding="8dp"
             android:background="@drawable/rounded_frame">
 
@@ -39,10 +39,10 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="Название какого-то рецепта"
-            android:fontFamily="sans-serif-condensed"
+            android:fontFamily="sans-serif-condensed-light"
+            android:textStyle="bold"
             android:textColor="@color/black"
-            android:textSize="30sp"
-            android:textStyle="bold"/>
+            android:textSize="25sp"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -53,7 +53,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="35-40 мин"
-                android:textSize="20sp"
+                android:textSize="18sp"
                 android:textColor="@color/black"
                 android:alpha="0.5"
                 android:textStyle="italic"
@@ -68,8 +68,8 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:paddingStart="5dp"
+                android:layout_marginTop="3dp"
                 android:src="@drawable/baseline_timer_24"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/time"
                 app:layout_constraintTop_toTopOf="@id/time"
                 android:alpha="0.5"/>
@@ -79,7 +79,7 @@
                 android:id="@+id/favorite_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
+                android:layout_marginEnd="10dp"
                 android:src="@drawable/baseline_favorite_border_24"
                 android:background="@null"
                 app:layout_constraintEnd_toEndOf="parent"
