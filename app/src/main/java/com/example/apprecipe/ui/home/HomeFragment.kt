@@ -6,6 +6,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
+import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -42,7 +44,12 @@ class HomeFragment : Fragment(), RecipeAdapter.OnItemClickListener {
         val spacingInPixels = resources.getDimensionPixelSize(R.dimen.card_spacing)
         recyclerView.addItemDecoration(SpaceItemDecoration(spacingInPixels))
 
+        setupButtonListeners()
+
         loadFavoriteRecipes()
+
+        val registrationPrompt: LinearLayout = binding.homeRegistrationPrompt
+        checkCurrentUser (registrationPrompt)
 
         return root
     }
@@ -128,6 +135,38 @@ class HomeFragment : Fragment(), RecipeAdapter.OnItemClickListener {
             state: RecyclerView.State
         ) {
             outRect.bottom = space
+        }
+    }
+    private fun checkCurrentUser (registrationPrompt: LinearLayout) {
+        val currentUser  = FirebaseAuth.getInstance().currentUser  // Получение текущего пользователя
+
+        if (currentUser  == null) {
+            showRegistrationPrompt(registrationPrompt) // Отображение подсказки регистрации, если пользователь не найден
+            hideOtherElements() // Скрытие остальных элементов
+        } else {
+            registrationPrompt.visibility = View.GONE // Скрытие подсказки, если пользователь найден
+            showOtherElements() // Показ остальных элементов
+        }
+    }
+
+    private fun hideOtherElements() {
+
+        binding.homeRecycleView.visibility = View.GONE // Скрыть другие элементы, если необходимо
+    }
+
+    private fun showOtherElements() {
+        binding.homeRecycleView.visibility = View.VISIBLE // Показать другие элементы, если они скрыты
+    }
+
+    private fun showRegistrationPrompt(registrationPrompt: LinearLayout) {
+        registrationPrompt.visibility = View.VISIBLE // Отображение подсказки регистрации
+        val slideIn = AnimationUtils.loadAnimation(requireContext(), R.anim.slide_in_bottom) // Загрузка анимации
+        registrationPrompt.startAnimation(slideIn) // Запуск анимации
+    }
+
+    private fun setupButtonListeners() {
+        binding.homeRegistrationBtn.setOnClickListener {
+            findNavController().navigate(R.id.navigation_setting) // Переход к фрагменту регистрации
         }
     }
 }

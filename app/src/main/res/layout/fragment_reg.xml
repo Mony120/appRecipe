@@ -6,20 +6,30 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".ui.settings.RegFragment"
-    android:background="?attr/colorPrimary">
+    android:background="?attr/colorPrimary"
+    android:paddingTop="80dp">
+<androidx.cardview.widget.CardView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    app:cardCornerRadius="10dp"
 
+    android:layout_marginTop="40dp"
+    android:layout_margin="10dp"
+    android:backgroundTint="?attr/colorPrimaryDark">
     <TextView
         android:id="@+id/text_reg_account"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="100dp"
+
         android:gravity="center"
+        android:layout_gravity="center"
         android:text="Регистрация"
         android:textStyle="bold"
         android:fontFamily="sans-serif-condensed-light"
-
         android:textColor="@color/white"
         android:textSize="40sp" />
+</androidx.cardview.widget.CardView>
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
@@ -86,19 +96,28 @@
             android:autofillHints="password"
             android:textColorHint="#757575" />
     </com.google.android.material.textfield.TextInputLayout>
+    <androidx.cardview.widget.CardView
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_gravity="center"
+        app:cardCornerRadius="10dp"
+        android:layout_margin="10dp"
 
+        android:backgroundTint="?attr/colorPrimaryDark">
     <TextView
         android:id="@+id/tvRedirectLogin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/white"
         android:gravity="center"
-        android:text="Уже зарегистрирован?"
-        android:textSize="15sp"
+        android:layout_gravity="center"
+        android:text="Уже зарегистрированы?"
+        android:textSize="20sp"
         android:textStyle="bold"
-        android:alpha="0.5"
+        android:alpha="0.7"
         android:fontFamily="sans-serif-condensed-light"
-        android:layout_marginVertical="20dp" />
+        />
+    </androidx.cardview.widget.CardView>
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_reg"
@@ -109,8 +128,8 @@
         android:text="Вперед"
         android:textSize="20sp"
         android:textStyle="bold"
-        android:backgroundTint="@color/pink"
-        android:textColor="@color/black"
+        android:backgroundTint="?attr/colorAccent"
+        android:textColor="@color/white"
         android:fontFamily="sans-serif-condensed-light"
         />
 
