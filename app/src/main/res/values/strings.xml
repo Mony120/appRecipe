@@ -5,4 +5,10 @@
     <string name="title_notifications">Каталог</string>
     <string name="title_setting">Профиль</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string-array name="sort_options">
+        <item>По алфавиту (А-Я)</item>
+        <item>По алфавиту (Я-А)</item>
+        <item>Сначала новые</item>
+        <item>Сначала старые</item>
+    </string-array>
 </resources>
