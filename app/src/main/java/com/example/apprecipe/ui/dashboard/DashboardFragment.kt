@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.apprecipe.R
@@ -16,11 +17,11 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
 data class Note(
-    var id: String = "", // Добавьте значения по умолчанию
+    var id: String = "",
     var text: String = "",
     var timestamp: Long = System.currentTimeMillis()
 ) {
-    // Добавьте конструктор без аргументов
+    // Конструктор без аргументов для Firebase
     constructor() : this("", "", System.currentTimeMillis())
 }
 
@@ -39,10 +40,14 @@ class DashboardFragment : Fragment() {
     private enum class SortType { ALPHABET_ASC, ALPHABET_DESC, DATE_ASC, DATE_DESC }
     private var currentSortType = SortType.ALPHABET_ASC
 
-    private val database: DatabaseReference by lazy {
-        FirebaseAuth.getInstance().currentUser?.uid?.let {
-            FirebaseDatabase.getInstance().getReference("users/$it/notes")
-        } ?: throw IllegalStateException("User not authenticated")
+    private val database: DatabaseReference? by lazy {
+        FirebaseAuth.getInstance().currentUser?.uid?.let { uid ->
+            FirebaseDatabase.getInstance().getReference("users/$uid/notes")
+        }
+    }
+
+    private val authStateListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
+        checkCurrentUser()
     }
 
     override fun onCreateView(
@@ -55,9 +60,18 @@ class DashboardFragment : Fragment() {
         setupSpinner()
         setupRecyclerView()
         checkCurrentUser()
-        loadNotes()
 
         return binding.root
+    }
+
+    override fun onStart() {
+        super.onStart()
+        FirebaseAuth.getInstance().addAuthStateListener(authStateListener)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        FirebaseAuth.getInstance().removeAuthStateListener(authStateListener)
     }
 
     private fun setupViews() {
@@ -69,11 +83,15 @@ class DashboardFragment : Fragment() {
         addNoteButton.setOnClickListener {
             val text = noteInput.text.toString()
             if (text.isNotEmpty()) {
-                saveNote(Note(id = database.push().key!!, text = text))
+                saveNote(Note(id = database?.push()?.key ?: "", text = text))
                 noteInput.text.clear()
             } else {
                 Toast.makeText(context, "Введите текст заметки", Toast.LENGTH_SHORT).show()
             }
+        }
+
+        binding.homeRegistrationBtn.setOnClickListener {
+            findNavController().navigate(R.id.navigation_login)
         }
     }
 
@@ -128,30 +146,26 @@ class DashboardFragment : Fragment() {
     }
 
     private fun saveNote(note: Note) {
-        database.child(note.id).setValue(note)
-            .addOnSuccessListener { loadNotes() }
-            .addOnFailureListener {
+        database?.child(note.id)?.setValue(note)
+            ?.addOnSuccessListener { loadNotes() }
+            ?.addOnFailureListener {
                 Toast.makeText(context, "Ошибка сохранения", Toast.LENGTH_SHORT).show()
-            }
+            } ?: showUnauthorizedState()
     }
 
     private fun loadNotes() {
-        database.addValueEventListener(object : ValueEventListener {
+        database?.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 notesList.clear()
-                for (snapshot in snapshot.children) {
-                    val note = snapshot.getValue(Note::class.java)
-                    note?.let {
-                        notesList.add(it)
-                    }
-                }
+                snapshot.children.mapNotNull { it.getValue(Note::class.java) }
+                    .forEach { notesList.add(it) }
                 sortNotes()
             }
 
             override fun onCancelled(error: DatabaseError) {
                 Toast.makeText(context, "Ошибка загрузки", Toast.LENGTH_SHORT).show()
             }
-        })
+        }) ?: showUnauthorizedState()
     }
 
     private fun showEditDialog(position: Int) {
@@ -176,16 +190,16 @@ class DashboardFragment : Fragment() {
     }
 
     private fun updateNote(noteId: String, newText: String) {
-        database.child(noteId).setValue(Note(noteId, newText))
-            .addOnSuccessListener { loadNotes() }
-            .addOnFailureListener {
+        database?.child(noteId)?.setValue(Note(noteId, newText))
+            ?.addOnSuccessListener { loadNotes() }
+            ?.addOnFailureListener {
                 Toast.makeText(context, "Ошибка обновления", Toast.LENGTH_SHORT).show()
-            }
+            } ?: showUnauthorizedState()
     }
 
     private fun showDeleteDialog(position: Int) {
         val note = notesList[position]
-        AlertDialog.Builder(requireContext(), R.style.MyDialogTheme)
+        AlertDialog.Builder(requireContext(),R.style.MyDialogTheme)
             .setTitle("Удалить заметку")
             .setMessage("Вы уверены, что хотите удалить эту заметку?")
             .setPositiveButton("Удалить") { _, _ ->
@@ -196,23 +210,30 @@ class DashboardFragment : Fragment() {
     }
 
     private fun deleteNote(noteId: String) {
-        database.child(noteId).removeValue()
-            .addOnSuccessListener { loadNotes() }
-            .addOnFailureListener {
+        database?.child(noteId)?.removeValue()
+            ?.addOnSuccessListener { loadNotes() }
+            ?.addOnFailureListener {
                 Toast.makeText(context, "Ошибка удаления", Toast.LENGTH_SHORT).show()
-            }
+            } ?: showUnauthorizedState()
     }
 
     private fun checkCurrentUser() {
         if (FirebaseAuth.getInstance().currentUser == null) {
-            binding.homeRegistrationPrompt.visibility = View.VISIBLE
-            binding.scroll.visibility = View.GONE
-            binding.recyclerView.visibility = View.GONE
+            showUnauthorizedState()
         } else {
+            loadNotes()
             binding.homeRegistrationPrompt.visibility = View.GONE
+            binding.sortSpinner.visibility = View.VISIBLE
             binding.scroll.visibility = View.VISIBLE
             binding.recyclerView.visibility = View.VISIBLE
         }
+    }
+
+    private fun showUnauthorizedState() {
+        binding.homeRegistrationPrompt.visibility = View.VISIBLE
+        binding.sortSpinner.visibility = View.GONE
+        binding.scroll.visibility = View.GONE
+        binding.recyclerView.visibility = View.GONE
     }
 
     override fun onDestroyView() {
