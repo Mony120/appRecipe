@@ -95,10 +95,10 @@ class NotificationsFragment : Fragment(), RecipeAdapter.OnItemClickListener {
 
     private fun setupFilterButtons() {
         binding.btnAll.setOnClickListener { showAllRecipes() }
-        binding.btnSoup.setOnClickListener { filterRecipesByCategory("Супы") }
+        binding.btnSoup.setOnClickListener { filterRecipesByCategory("Суп") }
         binding.btnSalad.setOnClickListener { filterRecipesByCategory("Салат") }
         binding.btnDessert.setOnClickListener { filterRecipesByCategory("Десерт") }
-        binding.btnGarnir.setOnClickListener { filterRecipesByCategory("Гарниры") }
+        binding.btnGarnir.setOnClickListener { filterRecipesByCategory("Гарнир") }
         binding.btnPech.setOnClickListener { filterRecipesByCategory("Выпечка") }
         binding.btnMeat.setOnClickListener { filterRecipesByCategory("Мясо") }
     }

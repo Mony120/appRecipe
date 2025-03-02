@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <LinearLayout
@@ -74,10 +75,11 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
             <EditText
                 android:id="@+id/note_input"
                 android:layout_width="match_parent"
@@ -89,21 +91,35 @@
                 android:maxLines="10"
                 android:scrollbars="vertical"
                 android:textColor="@color/black"
-                android:textColorHint="@color/black" />
+                android:textColorHint="@color/black"
+
+                app:layout_constraintTop_toBottomOf="@+id/sortSpinner"
+                tools:layout_editor_absoluteX="16dp" />
 
 
             <Button
                 android:id="@+id/add_note_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_margin="15dp"
+                android:backgroundTint="?attr/colorAccent"
+                android:fontFamily="sans-serif-condensed-light"
                 android:text="Добавить заметку"
                 android:textColor="@color/white"
-                android:layout_margin="15dp"
-                android:fontFamily="sans-serif-condensed-light"
                 android:textStyle="bold"
-                android:backgroundTint="?attr/colorAccent"/>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/note_input" />
 
-        </LinearLayout>
+            <Spinner
+                android:id="@+id/sortSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/colorOnPrimary"
+                android:outlineSpotShadowColor="@color/pink"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
     <androidx.recyclerview.widget.RecyclerView
