@@ -52,6 +52,23 @@ class RecipeDetailFragment : Fragment() {
                 updateFavoriteButtonState(binding.favoriteButton, id)
             }
         }
+        //afafafafasfafaf
+        arguments?.getSerializable("selected_recipe")?.let { recipe ->
+            val selectedRecipe = recipe as? Recipe ?: return@let
+            updateUI(selectedRecipe)
+
+            // Обработка нажатия на кнопку "Приготовленное"
+            binding.finishButton.setOnClickListener {
+                selectedRecipe.id?.let { id ->
+                    toggleFinish(id, binding.finishButton) // Передаем id только если он не null
+                }
+            }
+
+            // Обновляем состояние кнопки "Приготовленное"
+            selectedRecipe.id?.let { id ->
+                updateFinishButtonState(binding.finishButton, id)
+            }
+        }
     }
 
     private fun updateUI(recipe: Recipe) {
@@ -125,6 +142,55 @@ class RecipeDetailFragment : Fragment() {
         } else {
             // Установите иконку по умолчанию, если id или userId null
             button.setImageResource(R.drawable.baseline_favorite_border_24)
+        }
+    }
+    private fun toggleFinish(recipeId: String, button: ImageButton) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        if (userId != null) {
+            val finishRef = FirebaseDatabase.getInstance().getReference("users/$userId/finish")
+            finishRef.child(recipeId).addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    if (!isAdded) return // Прерываем, если фрагмент уничтожен
+
+                    if (dataSnapshot.exists()) {
+                        // Если рецепт уже в приготовленном, удаляем его
+                        finishRef.child(recipeId).removeValue()
+                    } else {
+                        // Если рецепта нет в приготовленном, добавляем его
+                        finishRef.child(recipeId).setValue(true)
+                    }
+                    updateFinishButtonState(button, recipeId) // Обновляем состояние кнопки
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    if (!isAdded) return
+                    // Обработка ошибок
+                }
+            })
+        }
+    }
+
+    private fun updateFinishButtonState(button: ImageButton, recipeId: String?) {
+        if (!isAdded) return // Проверка перед выполнением
+
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        if (userId != null && recipeId != null) {
+            val finishRef = FirebaseDatabase.getInstance().getReference("users/$userId/finish")
+            finishRef.child(recipeId).addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    if (!isAdded) return
+                    val isFinish = dataSnapshot.exists() // Проверка, существует ли рецепт в избранном
+                    button.setImageResource(if (isFinish) R.drawable.baseline_flag else R.drawable.baseline_outlined_flag) // Изменение иконки
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    if (!isAdded) return
+                    // Обработка ошибок
+                }
+            })
+        } else {
+            // Установите иконку по умолчанию, если id или userId null
+            button.setImageResource(R.drawable.baseline_outlined_flag)
         }
     }
 
