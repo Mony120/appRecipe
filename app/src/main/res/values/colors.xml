@@ -20,11 +20,11 @@
     <color name="colorOnContainer">#C17656</color>
 
 
-    <color name="colorPrimarySecondDark">#1E1F22</color>
+    <color name="colorPrimarySecondDark">#454545</color>
     <color name="colorPrimaryDark">#383A40</color>
-    <color name="colorAccentDark">#767676</color>
+    <color name="colorAccentDark">#1D1D1D</color>
     <color name="colorOnPrimaryDark">#929090</color>
-    <color name="colorOnContainerDark">#9B9A9A</color>
+    <color name="colorOnContainerDark">#5B5A5A</color>
 
     <color name="colorTextDark">#FFFFFF</color>
     <color name="colorText">#FF000000</color>
