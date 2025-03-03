@@ -159,6 +159,7 @@ class HomeFragment : Fragment(), RecipeAdapter.OnItemClickListener {
         binding.rvFav.visibility = if (favList.isEmpty()) View.GONE else View.VISIBLE
         binding.tvEmptyFav.visibility = if (favList.isEmpty()) View.VISIBLE else View.GONE
 
+
         // Управление видимостью для приготовленного
         binding.rvFinish.visibility = if (finishList.isEmpty()) View.GONE else View.VISIBLE
         binding.tvEmptyFinish.visibility = if (finishList.isEmpty()) View.VISIBLE else View.GONE
