@@ -76,6 +76,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
     <LinearLayout
+        android:id="@+id/llAll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -98,7 +99,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/tvBtnRead"
+            android:id="@+id/tvBtnFav"
             android:layout_width="45dp"
             android:layout_height="45dp"
             android:fontFamily="sans-serif-condensed-light"
@@ -126,7 +127,7 @@
         android:visibility="gone"
         android:layout_gravity="center"
 
-        android:textColor="@color/white"
+        android:textColor="?attr/textFillColor"
         android:textSize="30sp"
         android:textStyle="bold"
         android:fontFamily="sans-serif-condensed-light"
@@ -151,7 +152,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/tvFinish"
+            android:id="@+id/tvBtnFin"
             android:layout_width="45dp"
             android:layout_height="45dp"
             android:fontFamily="sans-serif-condensed-light"
@@ -180,7 +181,7 @@
         android:textSize="30sp"
         android:textStyle="bold"
         android:fontFamily="sans-serif-condensed-light"
-        android:textColor="@color/white" />
+        android:textColor="?attr/textFillColor" />
     </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

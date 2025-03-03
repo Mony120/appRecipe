@@ -18,6 +18,12 @@
         android:theme="@style/Theme.AppRecipe"
         tools:targetApi="31">
         <activity
+            android:name=".ui.FinActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.FavActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.RecipeDetailActivity"
             android:exported="false" />
         <activity

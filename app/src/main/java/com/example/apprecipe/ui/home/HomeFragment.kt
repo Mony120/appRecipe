@@ -1,5 +1,6 @@
 package com.example.apprecipe.ui.home
 
+import android.content.Intent
 import android.graphics.Rect
 import android.os.Bundle
 import android.util.Log
@@ -16,6 +17,8 @@ import com.example.apprecipe.R
 import com.example.apprecipe.Recipe
 import com.example.apprecipe.RecipeAdapter
 import com.example.apprecipe.databinding.FragmentHomeBinding
+import com.example.apprecipe.ui.FavActivity
+import com.example.apprecipe.ui.FinActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
@@ -202,6 +205,7 @@ class HomeFragment : Fragment(), RecipeAdapter.OnItemClickListener {
 
     private fun hideOtherElements() {
         binding.rvFav.visibility = View.GONE
+        binding.scrollView.visibility = View.GONE
         binding.rvFinish.visibility = View.GONE
         binding.tvEmptyFav.visibility = View.GONE
         binding.tvEmptyFinish.visibility = View.GONE
@@ -209,6 +213,7 @@ class HomeFragment : Fragment(), RecipeAdapter.OnItemClickListener {
 
     private fun showOtherElements() {
         binding.rvFav.visibility = View.VISIBLE
+        binding.scrollView.visibility = View.VISIBLE
         binding.rvFinish.visibility = View.VISIBLE
         updateUI() // Обновление видимости элементов
     }
@@ -223,5 +228,16 @@ class HomeFragment : Fragment(), RecipeAdapter.OnItemClickListener {
         binding.homeRegistrationBtn.setOnClickListener {
             findNavController().navigate(R.id.navigation_setting) // Переход к фрагменту регистрации
         }
+        binding.tvBtnFav.setOnClickListener {
+            startActivity(Intent(requireContext(), FavActivity::class.java).apply {
+                putExtra("fav_recipes", ArrayList(favList))
+            })
+        }
+        binding.tvBtnFin.setOnClickListener {
+            startActivity(Intent(requireContext(), FinActivity::class.java).apply {
+                putExtra("fin_recipes", ArrayList(finishList))
+            })
+        }
     }
+
 }
