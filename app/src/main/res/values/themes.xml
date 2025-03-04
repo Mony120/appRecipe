@@ -8,5 +8,6 @@
         <item name="android:windowLightStatusBar">true</item>
         <item name="colorOnPrimary">@color/colorOnPrimary</item>
         <item name="colorOnContainer">@color/colorOnContainer</item>
+        <item name="colorBackgroundFloating">@color/white</item>
     </style>
 </resources>

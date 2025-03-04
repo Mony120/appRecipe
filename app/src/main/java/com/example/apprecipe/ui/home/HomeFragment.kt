@@ -1,5 +1,6 @@
 package com.example.apprecipe.ui.home
 
+import android.content.Intent
 import android.graphics.Rect
 import android.os.Bundle
 import android.util.Log
@@ -16,6 +17,8 @@ import com.example.apprecipe.R
 import com.example.apprecipe.Recipe
 import com.example.apprecipe.RecipeAdapter
 import com.example.apprecipe.databinding.FragmentHomeBinding
+import com.example.apprecipe.ui.FavActivity
+import com.example.apprecipe.ui.FinActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
@@ -24,10 +27,12 @@ class HomeFragment : Fragment(), RecipeAdapter.OnItemClickListener {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var recipeAdapter: RecipeAdapter
-    private val recipeList = mutableListOf<Recipe>()
-    private val loadedRecipeIds = mutableSetOf<String>() // Для отслеживания загруженных рецептов
+    private lateinit var favAdapter: RecipeAdapter
+    private lateinit var finishAdapter: RecipeAdapter
+    private val favList = mutableListOf<Recipe>()
+    private val finishList = mutableListOf<Recipe>()
+    private val loadedFavIds = mutableSetOf<String>()
+    private val loadedFinishIds = mutableSetOf<String>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,82 +42,130 @@ class HomeFragment : Fragment(), RecipeAdapter.OnItemClickListener {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        recyclerView = binding.homeRecycleView
-        recipeAdapter = RecipeAdapter(recipeList, this)
-        recyclerView.layoutManager = LinearLayoutManager(context)
-        recyclerView.adapter = recipeAdapter
-        val spacingInPixels = resources.getDimensionPixelSize(R.dimen.card_spacing)
-        recyclerView.addItemDecoration(SpaceItemDecoration(spacingInPixels))
+        // Инициализация RecyclerView для избранного
+        binding.rvFav.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        favAdapter = RecipeAdapter(favList, this)
+        binding.rvFav.adapter = favAdapter
+        binding.rvFav.addItemDecoration(SpaceItemDecoration(resources.getDimensionPixelSize(R.dimen.card_spacing)))
+
+        // Инициализация RecyclerView для приготовленного
+        binding.rvFinish.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        finishAdapter = RecipeAdapter(finishList, this)
+        binding.rvFinish.adapter = finishAdapter
+        binding.rvFinish.addItemDecoration(SpaceItemDecoration(resources.getDimensionPixelSize(R.dimen.card_spacing)))
 
         setupButtonListeners()
-
+        checkCurrentUser(binding.homeRegistrationPrompt)
         loadFavoriteRecipes()
-
-        val registrationPrompt: LinearLayout = binding.homeRegistrationPrompt
-        checkCurrentUser (registrationPrompt)
+        loadFinishedRecipes() // Новый метод для загрузки приготовленных
 
         return root
     }
 
     private fun loadFavoriteRecipes() {
-        val userId = FirebaseAuth.getInstance().currentUser?.uid
-        Log.d("HomeFragment", "User ID: $userId")
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
 
-        userId?.let { uid ->
-            val favoritesRef = FirebaseDatabase.getInstance()
-                .getReference("users/$uid/favorites")
+        FirebaseDatabase.getInstance().getReference("users/$userId/favorites")
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (!isAdded || isDetached) return // Проверка состояния Fragment
 
-            favoritesRef.addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    recipeList.clear()
-                    loadedRecipeIds.clear()
-                    Log.d("HomeFragment", "Found ${dataSnapshot.childrenCount} favorites")
+                    favList.clear()
+                    loadedFavIds.clear()
 
-                    dataSnapshot.children.forEach { snapshot ->
-                        val recipeId = snapshot.key
-                        Log.d("HomeFragment", "Processing recipe ID: $recipeId")
-
+                    snapshot.children.forEach { child ->
+                        val recipeId = child.key
                         recipeId?.let {
-                            if (!loadedRecipeIds.contains(it)) {
-                                getRecipeById(it)
+                            if (!loadedFavIds.contains(it)) {
+                                loadRecipe(it, "favorites")
                             }
                         }
                     }
+                    updateUI() // Обновление UI после загрузки данных
                 }
 
-                override fun onCancelled(databaseError: DatabaseError) {
-                    Log.e("HomeFragment", "Error loading favorites: ${databaseError.message}")
+                override fun onCancelled(error: DatabaseError) {
+                    Log.e("HomeFragment", "Favorites error: ${error.message}")
                 }
             })
-        } ?: run {
-            Log.d("HomeFragment", "User not authenticated")
-        }
     }
 
-    private fun getRecipeById(recipeId: String) {
-        val recipeRef = FirebaseDatabase.getInstance()
-            .getReference("recipes/$recipeId")
+    private fun loadFinishedRecipes() {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
 
-        recipeRef.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val recipe = dataSnapshot.getValue(Recipe::class.java)?.apply {
-                    id = dataSnapshot.key // Устанавливаем ID из ключа Firebase
+        FirebaseDatabase.getInstance().getReference("users/$userId/finish")
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (!isAdded || isDetached) return // Проверка состояния Fragment
+
+                    finishList.clear()
+                    loadedFinishIds.clear()
+
+                    snapshot.children.forEach { child ->
+                        val recipeId = child.key
+                        recipeId?.let {
+                            if (!loadedFinishIds.contains(it)) {
+                                loadRecipe(it, "finish")
+                            }
+                        }
+                    }
+                    updateUI() // Обновление UI после загрузки данных
                 }
 
-                recipe?.let {
-                    if (!loadedRecipeIds.contains(it.id)) {
-                        recipeList.add(it)
-                        loadedRecipeIds.add(it.id!!)
-                        recipeAdapter.notifyDataSetChanged()
-                        Log.d("HomeFragment", "Added recipe: ${it.name}")
-                    }
-                } ?: Log.d("HomeFragment", "Recipe not found: $recipeId")
-            }
+                override fun onCancelled(error: DatabaseError) {
+                    Log.e("HomeFragment", "Finish error: ${error.message}")
+                }
+            })
+    }
 
-            override fun onCancelled(databaseError: DatabaseError) {
-                Log.e("HomeFragment", "Error loading recipe: ${databaseError.message}")
-            }
-        })
+    private fun loadRecipe(recipeId: String, category: String) {
+        FirebaseDatabase.getInstance().getReference("recipes/$recipeId")
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (!isAdded || isDetached) return // Проверка состояния Fragment
+
+                    val recipe = snapshot.getValue(Recipe::class.java)?.apply {
+                        id = snapshot.key
+                    }
+
+                    recipe?.let {
+                        when (category) {
+                            "favorites" -> {
+                                if (!loadedFavIds.contains(it.id)) {
+                                    favList.add(it)
+                                    loadedFavIds.add(it.id!!)
+                                    favAdapter.notifyDataSetChanged()
+                                }
+                            }
+                            "finish" -> {
+                                if (!loadedFinishIds.contains(it.id)) {
+                                    finishList.add(it)
+                                    loadedFinishIds.add(it.id!!)
+                                    finishAdapter.notifyDataSetChanged()
+                                }
+                            }
+                        }
+                        updateUI() // Обновление видимости элементов
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Log.e("HomeFragment", "Recipe load error: ${error.message}")
+                }
+            })
+    }
+
+    private fun updateUI() {
+        if (_binding == null) return // Проверка на null
+
+        // Управление видимостью для избранного
+        binding.rvFav.visibility = if (favList.isEmpty()) View.GONE else View.VISIBLE
+        binding.tvEmptyFav.visibility = if (favList.isEmpty()) View.VISIBLE else View.GONE
+
+
+        // Управление видимостью для приготовленного
+        binding.rvFinish.visibility = if (finishList.isEmpty()) View.GONE else View.VISIBLE
+        binding.tvEmptyFinish.visibility = if (finishList.isEmpty()) View.VISIBLE else View.GONE
     }
 
     override fun onItemClick(recipe: Recipe) {
@@ -137,10 +190,11 @@ class HomeFragment : Fragment(), RecipeAdapter.OnItemClickListener {
             outRect.bottom = space
         }
     }
-    private fun checkCurrentUser (registrationPrompt: LinearLayout) {
-        val currentUser  = FirebaseAuth.getInstance().currentUser  // Получение текущего пользователя
 
-        if (currentUser  == null) {
+    private fun checkCurrentUser(registrationPrompt: LinearLayout) {
+        val currentUser = FirebaseAuth.getInstance().currentUser // Получение текущего пользователя
+
+        if (currentUser == null) {
             showRegistrationPrompt(registrationPrompt) // Отображение подсказки регистрации, если пользователь не найден
             hideOtherElements() // Скрытие остальных элементов
         } else {
@@ -150,12 +204,18 @@ class HomeFragment : Fragment(), RecipeAdapter.OnItemClickListener {
     }
 
     private fun hideOtherElements() {
-
-        binding.homeRecycleView.visibility = View.GONE // Скрыть другие элементы, если необходимо
+        binding.rvFav.visibility = View.GONE
+        binding.scrollView.visibility = View.GONE
+        binding.rvFinish.visibility = View.GONE
+        binding.tvEmptyFav.visibility = View.GONE
+        binding.tvEmptyFinish.visibility = View.GONE
     }
 
     private fun showOtherElements() {
-        binding.homeRecycleView.visibility = View.VISIBLE // Показать другие элементы, если они скрыты
+        binding.rvFav.visibility = View.VISIBLE
+        binding.scrollView.visibility = View.VISIBLE
+        binding.rvFinish.visibility = View.VISIBLE
+        updateUI() // Обновление видимости элементов
     }
 
     private fun showRegistrationPrompt(registrationPrompt: LinearLayout) {
@@ -168,5 +228,16 @@ class HomeFragment : Fragment(), RecipeAdapter.OnItemClickListener {
         binding.homeRegistrationBtn.setOnClickListener {
             findNavController().navigate(R.id.navigation_setting) // Переход к фрагменту регистрации
         }
+        binding.tvBtnFav.setOnClickListener {
+            startActivity(Intent(requireContext(), FavActivity::class.java).apply {
+                putExtra("fav_recipes", ArrayList(favList))
+            })
+        }
+        binding.tvBtnFin.setOnClickListener {
+            startActivity(Intent(requireContext(), FinActivity::class.java).apply {
+                putExtra("fin_recipes", ArrayList(finishList))
+            })
+        }
     }
+
 }
