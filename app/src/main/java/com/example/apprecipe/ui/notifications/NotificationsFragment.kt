@@ -101,6 +101,7 @@ class NotificationsFragment : Fragment(), RecipeAdapter.OnItemClickListener {
         binding.btnGarnir.setOnClickListener { filterRecipesByCategory("Гарнир") }
         binding.btnPech.setOnClickListener { filterRecipesByCategory("Выпечка") }
         binding.btnMeat.setOnClickListener { filterRecipesByCategory("Мясо") }
+        binding.btnSecond.setOnClickListener { filterRecipesByCategory("Второе") }
     }
 
     private fun fetchRecipesFromFirebase() {
