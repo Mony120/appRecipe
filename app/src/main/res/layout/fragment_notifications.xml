@@ -84,7 +84,7 @@
             android:layout_height="wrap_content"
             android:iconifiedByDefault="false"
             android:queryBackground="@android:color/transparent"
-            android:queryHint="Введите...(Например сырники)"
+            android:queryHint="Введите название или категорию"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -124,6 +124,18 @@
                 android:layout_height="50dp"
                 android:textColor="@color/white"
                 android:text="Супы"
+                android:textSize="10sp"
+                android:layout_marginStart="5dp"
+                android:fontFamily="sans-serif-condensed-light"
+                android:textStyle="bold"
+                android:backgroundTint="?attr/colorAccent"
+                app:cornerRadius="20dp"/>
+            <Button
+                android:id="@+id/btnSecond"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:textColor="@color/white"
+                android:text="Второе"
                 android:textSize="10sp"
                 android:layout_marginStart="5dp"
                 android:fontFamily="sans-serif-condensed-light"
