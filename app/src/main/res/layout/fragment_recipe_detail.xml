@@ -110,14 +110,15 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
-                app:cardBackgroundColor="@color/white"
+                app:cardBackgroundColor="?attr/colorBackgroundFloating"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="10dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    >
 
                     <TextView
                         android:layout_width="match_parent"
@@ -126,7 +127,7 @@
                         android:textStyle="bold"
                         android:padding="8dp"
                         android:text="Ингредиенты"
-                        android:textColor="@color/black"
+                        android:textColor="?attr/textFillColor"
                         android:textSize="25sp"
                        />
 
@@ -135,7 +136,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:padding="8dp"
-                        android:textColor="@color/black"
+                        android:textColor="?attr/textFillColor"
                         android:textSize="24sp" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -145,7 +146,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
-                app:cardBackgroundColor="@color/white"
+                app:cardBackgroundColor="?attr/colorBackgroundFloating"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="10dp">
 
@@ -159,7 +160,7 @@
                         android:layout_height="wrap_content"
                         android:padding="8dp"
                         android:text="Процесс готовки"
-                        android:textColor="@color/black"
+                        android:textColor="?attr/textFillColor"
                         android:textSize="25sp"
                         android:fontFamily="sans-serif-condensed-light"
                         android:textStyle="bold"
@@ -170,7 +171,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:padding="8dp"
-                        android:textColor="@color/black"
+                        android:textColor="?attr/textFillColor"
                         android:textSize="16sp" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -180,7 +181,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
-                app:cardBackgroundColor="@color/white"
+                app:cardBackgroundColor="?attr/colorBackgroundFloating"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="10dp">
 
@@ -196,7 +197,7 @@
                         android:textStyle="bold"
                         android:padding="8dp"
                         android:text="Пищевая ценность"
-                        android:textColor="@color/black"
+                        android:textColor="?attr/textFillColor"
                         android:textSize="25sp"
                         />
 
@@ -208,7 +209,7 @@
                         android:paddingEnd="8dp"
                         android:paddingBottom="8dp"
                         android:text="На 100 грамм"
-                        android:textColor="@color/black"
+                        android:textColor="?attr/textFillColor"
                         android:textSize="15sp"
                         android:fontFamily="sans-serif-condensed-light"
                         android:textStyle="bold"
@@ -220,7 +221,7 @@
                         android:layout_height="wrap_content"
                         android:padding="8dp"
 
-                        android:textColor="@color/black"
+                        android:textColor="?attr/textFillColor"
                         android:textSize="16sp" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
