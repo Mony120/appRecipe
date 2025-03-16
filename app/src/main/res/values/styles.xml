@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="MyDialogTheme" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
-    <!-- Цвет кнопок -->
+
     <item name="buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>
     <item name="buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
 </style>

@@ -13,14 +13,33 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class PostsAdapter(private val posts: List<Post>) :
-    RecyclerView.Adapter<PostsAdapter.PostViewHolder>() {
+class PostsAdapter(
+    private val posts: List<Post>,
+    private val currentUserId: String,
+    private val onLongClick: (Post) -> Unit
+) : RecyclerView.Adapter<PostsAdapter.PostViewHolder>() {
 
-    class PostViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class PostViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvAuthor: TextView = view.findViewById(R.id.tvAuthor)
         val tvText: TextView = view.findViewById(R.id.tvText)
-        val ivPostImage: ImageView = view.findViewById(R.id.ivPostImage)
         val tvTimestamp: TextView = view.findViewById(R.id.tvTimestamp)
+
+        init {
+            itemView.setOnLongClickListener {
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    val post = posts[position]
+                    if (post.authorId == currentUserId) {
+                        onLongClick(post)
+                        true
+                    } else {
+                        false
+                    }
+                } else {
+                    false
+                }
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
@@ -36,13 +55,10 @@ class PostsAdapter(private val posts: List<Post>) :
         holder.tvTimestamp.text = SimpleDateFormat("dd MMM yyyy HH:mm", Locale.getDefault())
             .format(Date(post.timestamp))
 
-        post.image?.let {
-            val decodedBytes = Base64.decode(it, Base64.DEFAULT)
-            val bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
-            holder.ivPostImage.setImageBitmap(bitmap)
-        } ?: run {
-            holder.ivPostImage.visibility = View.GONE
-        }
+
+
+        // Включаем долгое нажатие только для своих постов
+        holder.itemView.isLongClickable = post.authorId == currentUserId
     }
 
     override fun getItemCount() = posts.size

@@ -38,7 +38,7 @@ class ForumFragment : Fragment() {
     private lateinit var database: FirebaseDatabase
     private lateinit var postsRef: DatabaseReference
     private lateinit var adapter: PostsAdapter
-    private val PICK_IMAGE_REQUEST = 1
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -65,7 +65,12 @@ class ForumFragment : Fragment() {
 
     private fun setupRecyclerView() {
         val recyclerView = view?.findViewById<RecyclerView>(R.id.postsRecyclerView)
-        adapter = PostsAdapter(emptyList())
+        val user = auth.currentUser
+        adapter = PostsAdapter(
+            posts = emptyList(),
+            currentUserId = user?.uid ?: "",
+            onLongClick = { post -> showDeleteDialog(post) }
+        )
         recyclerView?.adapter = adapter
     }
 
@@ -77,7 +82,11 @@ class ForumFragment : Fragment() {
                     val post = postSnapshot.getValue(Post::class.java)
                     post?.let { posts.add(it) }
                 }
-                adapter = PostsAdapter(posts.sortedByDescending { it.timestamp })
+                adapter = PostsAdapter(
+                    posts = posts.sortedByDescending { it.timestamp },
+                    currentUserId = auth.currentUser?.uid ?: "",
+                    onLongClick = { post -> showDeleteDialog(post) }
+                )
                 view?.findViewById<RecyclerView>(R.id.postsRecyclerView)?.adapter = adapter
             }
 
@@ -87,7 +96,7 @@ class ForumFragment : Fragment() {
         })
     }
 
-    private var selectedImageUri: Uri? = null
+
 
     private fun showAddPostDialog() {
         val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_add_post, null)
@@ -96,31 +105,36 @@ class ForumFragment : Fragment() {
             .setView(dialogView)
             .setPositiveButton("Опубликовать") { _, _ ->
                 val text = dialogView.findViewById<EditText>(R.id.etPostText).text.toString()
-                createPost(text, selectedImageUri)
+                createPost(text)
             }
             .setNegativeButton("Отмена", null)
             .create()
 
-        val imageButton = dialogView.findViewById<ImageButton>(R.id.ibAddImage)
-        val imagePreview = dialogView.findViewById<ImageView>(R.id.ivPreview)
-
-        imageButton.setOnClickListener {
-            val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-            startActivityForResult(intent, PICK_IMAGE_REQUEST)
-        }
-
-        dialog.setOnShowListener {
-            // Обновляем превью при повторном открытии диалога
-            selectedImageUri?.let { uri ->
-                imagePreview.visibility = View.VISIBLE
-                imagePreview.setImageURI(uri)
-            }
-        }
 
         dialog.show()
     }
+    private fun showDeleteDialog(post: Post) {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Удаление поста")
+            .setMessage("Вы уверены, что хотите удалить этот пост?")
+            .setPositiveButton("Удалить") { _, _ ->
+                deletePost(post)
+            }
+            .setNegativeButton("Отмена", null)
+            .show()
+    }
 
-    private fun createPost(text: String, imageUri: Uri?) {
+    private fun deletePost(post: Post) {
+        postsRef.child(post.postId).removeValue()
+            .addOnSuccessListener {
+                Toast.makeText(context, "Пост удален", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(context, "Ошибка удаления: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun createPost(text: String) {
         val user = auth.currentUser ?: return
         val postRef = postsRef.push()
 
@@ -132,20 +146,12 @@ class ForumFragment : Fragment() {
                         .getValue(String::class.java)
                 }
 
-                // Конвертируем изображение если есть
-                val imageBase64 = imageUri?.let { uri ->
-                    val bitmap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver, uri)
-                    val byteArrayOutputStream = ByteArrayOutputStream()
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 70, byteArrayOutputStream)
-                    Base64.encodeToString(byteArrayOutputStream.toByteArray(), Base64.DEFAULT)
-                }
 
                 val post = Post(
                     postId = postRef.key!!,
                     authorId = user.uid,
                     authorName = username ?: "Аноним",
                     text = text,
-                    image = imageBase64,
                     timestamp = System.currentTimeMillis()
                 )
 

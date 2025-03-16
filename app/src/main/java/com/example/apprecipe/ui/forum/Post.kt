@@ -5,6 +5,6 @@ data class Post(
     val authorId: String = "",
     val authorName: String = "",
     val text: String = "",
-    val image: String? = null,
+
     val timestamp: Long = 0
 )
