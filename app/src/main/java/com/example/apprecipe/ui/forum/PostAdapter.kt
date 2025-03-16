@@ -33,19 +33,35 @@ class PostsAdapter(
         val ivAvatar: ImageView = view.findViewById(R.id.ivAvatar) // ImageView для аватарки
 
         var avatarListener: ValueEventListener? = null // Слушатель для аватарки
+        var nameListener: ValueEventListener? = null // Слушатель для имени пользователя
 
         fun bind(post: Post) {
-            tvAuthor.text = post.authorName
             tvText.text = post.text
             tvTimestamp.text = SimpleDateFormat("dd MMM yyyy HH:mm", Locale.getDefault())
                 .format(Date(post.timestamp))
 
-            // Удаляем предыдущий слушатель, если он есть
+            // Удаляем предыдущие слушатели, если они есть
             avatarListener?.let {
                 database.getReference("users/${post.authorId}/profile/image").removeEventListener(it)
             }
+            nameListener?.let {
+                database.getReference("users/${post.authorId}/username").removeEventListener(it)
+            }
 
-            // Добавляем слушатель для обновления аватарки в реальном времени
+            // Слушатель для обновления имени пользователя в реальном времени
+            nameListener = database.getReference("users/${post.authorId}/username")
+                .addValueEventListener(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val name = snapshot.getValue(String::class.java)
+                        tvAuthor.text = name ?: "Неизвестно" // Обновляем имя
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        Log.e("PostsAdapter", "Ошибка загрузки имени", error.toException())
+                    }
+                })
+
+            // Слушатель для обновления аватарки в реальном времени
             avatarListener = database.getReference("users/${post.authorId}/profile/image")
                 .addValueEventListener(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
@@ -98,10 +114,13 @@ class PostsAdapter(
 
     override fun onViewRecycled(holder: PostViewHolder) {
         super.onViewRecycled(holder)
-        // Очищаем слушатель при переиспользовании ViewHolder
+        // Очищаем слушатели при переиспользовании ViewHolder
         val post = posts[holder.adapterPosition]
         holder.avatarListener?.let {
             database.getReference("users/${post.authorId}/profile/image").removeEventListener(it)
+        }
+        holder.nameListener?.let {
+            database.getReference("users/${post.authorId}/username").removeEventListener(it)
         }
     }
 }
