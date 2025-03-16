@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">appRecipe</string>
+    <string name="app_name">Книга рецептов</string>
     <string name="title_home">Мои рецепты</string>
     <string name="title_dashboard">Заметки</string>
     <string name="title_notifications">Каталог</string>
