@@ -32,13 +32,11 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 
-
 class ForumFragment : Fragment() {
     private lateinit var auth: FirebaseAuth
     private lateinit var database: FirebaseDatabase
     private lateinit var postsRef: DatabaseReference
     private lateinit var adapter: PostsAdapter
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -82,12 +80,24 @@ class ForumFragment : Fragment() {
                     val post = postSnapshot.getValue(Post::class.java)
                     post?.let { posts.add(it) }
                 }
-                adapter = PostsAdapter(
-                    posts = posts.sortedByDescending { it.timestamp },
-                    currentUserId = auth.currentUser?.uid ?: "",
-                    onLongClick = { post -> showDeleteDialog(post) }
-                )
-                view?.findViewById<RecyclerView>(R.id.postsRecyclerView)?.adapter = adapter
+
+                // Загружаем аватарки для каждого поста
+                lifecycleScope.launch {
+                    val updatedPosts = posts.map { post ->
+                        val avatar = withContext(Dispatchers.IO) {
+                            database.getReference("users/${post.authorId}/profile/image").get().await()
+                                .getValue(String::class.java)
+                        }
+                        post.copy(authorAvatar = avatar) // Обновляем аватарку в посте
+                    }
+
+                    adapter = PostsAdapter(
+                        posts = updatedPosts.sortedByDescending { it.timestamp },
+                        currentUserId = auth.currentUser?.uid ?: "",
+                        onLongClick = { post -> showDeleteDialog(post) }
+                    )
+                    view?.findViewById<RecyclerView>(R.id.postsRecyclerView)?.adapter = adapter
+                }
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -95,8 +105,6 @@ class ForumFragment : Fragment() {
             }
         })
     }
-
-
 
     private fun showAddPostDialog() {
         val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_add_post, null)
@@ -110,9 +118,9 @@ class ForumFragment : Fragment() {
             .setNegativeButton("Отмена", null)
             .create()
 
-
         dialog.show()
     }
+
     private fun showDeleteDialog(post: Post) {
         AlertDialog.Builder(requireContext())
             .setTitle("Удаление поста")
@@ -140,19 +148,21 @@ class ForumFragment : Fragment() {
 
         lifecycleScope.launch {
             try {
-                // Получаем имя пользователя
-                val username = withContext(Dispatchers.IO) {
-                    database.getReference("users/${user.uid}/username").get().await()
-                        .getValue(String::class.java)
+                // Получаем имя пользователя и аватарку
+                val userData = withContext(Dispatchers.IO) {
+                    database.getReference("users/${user.uid}").get().await()
                 }
 
+                val username = userData.child("username").getValue(String::class.java)
+                val avatar = userData.child("profile").child("image").getValue(String::class.java)
 
                 val post = Post(
                     postId = postRef.key!!,
                     authorId = user.uid,
                     authorName = username ?: "Аноним",
                     text = text,
-                    timestamp = System.currentTimeMillis()
+                    timestamp = System.currentTimeMillis(),
+                    authorAvatar = avatar // Сохраняем аватарку
                 )
 
                 postRef.setValue(post)
