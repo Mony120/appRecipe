@@ -12,13 +12,18 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.apprecipe.R
+import com.example.apprecipe.databinding.FragmentForumBinding
+import com.example.apprecipe.databinding.FragmentNotificationsBinding
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -30,9 +35,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
-import java.io.ByteArrayOutputStream
+
 
 class ForumFragment : Fragment() {
+
+    private var _binding: FragmentForumBinding? = null
+    private val binding get() = _binding!!
+
     private lateinit var auth: FirebaseAuth
     private lateinit var database: FirebaseDatabase
     private lateinit var postsRef: DatabaseReference
@@ -42,8 +51,9 @@ class ForumFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_forum, container, false)
+    ): View {
+        _binding = FragmentForumBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -52,13 +62,17 @@ class ForumFragment : Fragment() {
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance()
         postsRef = database.getReference("posts")
-
+        setupButtonListeners()
         setupRecyclerView()
         loadPosts()
+
+        val registrationPrompt: LinearLayout = binding.homeRegistrationPrompt
+        checkCurrentUser(registrationPrompt)
 
         view.findViewById<FloatingActionButton>(R.id.fabAddPost).setOnClickListener {
             showAddPostDialog()
         }
+
     }
 
     private fun setupRecyclerView() {
@@ -176,5 +190,43 @@ class ForumFragment : Fragment() {
                 Log.e("ForumFragment", "Error creating post", e)
             }
         }
+    }
+    private fun checkCurrentUser(registrationPrompt: LinearLayout) {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+
+        if (currentUser == null) {
+            showRegistrationPrompt(registrationPrompt)
+            hideOtherElements()
+        } else {
+            registrationPrompt.visibility = View.GONE
+            showOtherElements()
+        }
+    }
+
+    private fun hideOtherElements() {
+        binding.fabAddPost.visibility = View.GONE
+        binding.postsRecyclerView.visibility = View.GONE
+
+    }
+
+    private fun showOtherElements() {
+        binding.fabAddPost.visibility = View.VISIBLE
+        binding.postsRecyclerView.visibility = View.VISIBLE
+    }
+
+    private fun showRegistrationPrompt(registrationPrompt: LinearLayout) {
+        registrationPrompt.visibility = View.VISIBLE
+        val slideIn = AnimationUtils.loadAnimation(requireContext(), R.anim.slide_in_bottom)
+        registrationPrompt.startAnimation(slideIn)
+    }
+
+    private fun setupButtonListeners() {
+        binding.homeRegistrationBtn.setOnClickListener {
+            findNavController().navigate(R.id.navigation_setting)
+        }
+    }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
