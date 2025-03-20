@@ -16,6 +16,10 @@
         android:icon="@drawable/baseline_apps_24"
         android:title="@string/title_notifications" />
     <item
+        android:id="@+id/navigation_forum"
+        android:icon="@drawable/baseline_people"
+        android:title="@string/title_forum" />
+    <item
         android:id="@+id/navigation_setting"
         android:icon="@drawable/baseline_settings_24"
         android:title="@string/title_setting" />

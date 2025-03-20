@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:id="@+id/home_registration_prompt"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/rounded_frame"
+        android:orientation="vertical"
+        android:backgroundTint="?attr/colorOnContainer"
+        android:visibility="gone"
+        android:layout_marginTop="400dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            app:cardCornerRadius="40dp"
+            android:layout_marginTop="40dp"
+            android:layout_margin="10dp"
+            android:backgroundTint="?attr/colorPrimary">
+            <TextView
+                android:id="@+id/registration_prompt_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="Пожалуйста, войдите для продолжения."
+                android:textSize="35sp"
+                android:padding="10dp"
+                android:fontFamily="sans-serif-condensed-light"
+                android:textStyle="bold"
+                android:textColor="?attr/textFillColor"/>
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="Для просмотра необходимо войти или зарегистрироваться"
+            android:textSize="16sp"
+            android:textColor="@color/white"
+            android:layout_marginTop="15dp"
+            android:fontFamily="sans-serif-condensed-light"
+            android:textStyle="bold"
+            android:layout_marginHorizontal="60dp"/>
+
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/home_registration_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_frame"
+            android:text="Войти"
+            android:fontFamily="sans-serif-condensed-light"
+            android:layout_marginHorizontal="100dp"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:backgroundTint="?attr/colorAccent"
+            android:textColor="@color/white"
+            android:layout_marginTop="30dp"/>
+    </LinearLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/postsRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toTopOf="@id/imageView2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabAddPost"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:backgroundTint="?attr/colorAccent"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="70dp"
+        android:src="@android:drawable/ic_input_add"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="1dp"
+        android:layout_height="50dp"
+        android:src="@color/design_default_color_error"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

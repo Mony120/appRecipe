@@ -36,6 +36,12 @@
         android:label="@string/title_setting"
         tools:layout="@layout/fragment_setting" />
     <fragment
+        android:id="@+id/navigation_forum"
+        android:name="com.example.apprecipe.ui.forum.ForumFragment"
+        android:label="Форум"
+        tools:layout="@layout/fragment_forum"/>
+
+    <fragment
         android:id="@+id/navigation_login"
         android:name="com.example.apprecipe.ui.settings.LoginFragment"
         android:label="вход"

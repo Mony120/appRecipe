@@ -1,5 +1,6 @@
 package com.example.apprecipe.ui.settings
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -14,6 +15,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Switch
 import android.widget.TextView
@@ -82,7 +84,11 @@ class SettingFragment : Fragment() {
         val loginTextView: TextView = view.findViewById(R.id.tv_name)
         val btnLogout: Button = view.findViewById(R.id.btn_logout)
         imageViewProfile = view.findViewById(R.id.imageView)
-        val btnChangeProf: Button = view.findViewById(R.id.btn_ChangeProf)
+
+        val btnChangeName: Button = view.findViewById(R.id.btn_ChangeName) // Новая кнопка
+        btnChangeName.setOnClickListener { showChangeNameDialog() }
+
+        val btnChangeProf: Button = view.findViewById(R.id.btn_ChangeProfile)
 
         // Обработчик нажатия на кнопку изменения профиля
         btnChangeProf.setOnClickListener {
@@ -183,6 +189,39 @@ class SettingFragment : Fragment() {
                 Log.w("SettingFragment", "Ошибка при загрузке изображения", e)
             }
 }
+    private fun showChangeNameDialog() {
+        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_change_name, null)
+        val editTextName = dialogView.findViewById<EditText>(R.id.etNewName)
+
+        AlertDialog.Builder(requireContext())
+            .setTitle("Смена имени")
+            .setView(dialogView)
+            .setPositiveButton("Сохранить") { _, _ ->
+                val newName = editTextName.text.toString().trim()
+                if (newName.isNotEmpty()) {
+                    updateUserName(newName)
+                } else {
+                    Toast.makeText(context, "Имя не может быть пустым", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .setNegativeButton("Отмена", null)
+            .show()
+    }
+
+    // ОБНОВЛЕНИЕ ИМЕНИ В FIREBASE
+    private fun updateUserName(newName: String) {
+        val userId = auth.currentUser?.uid ?: return
+
+        myRef.child(userId).child("username").setValue(newName)
+            .addOnSuccessListener {
+                // Обновляем TextView с именем
+                view?.findViewById<TextView>(R.id.tv_name)?.text = newName
+                Toast.makeText(context, "Имя успешно изменено", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(context, "Ошибка: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+    }
 
     private fun logOut() {
         auth.signOut()

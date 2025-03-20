@@ -56,7 +56,10 @@ class MainActivity : AppCompatActivity() {
                 R.id.navigation_setting -> {
                     navController.navigate(R.id.navigation_setting)
                     true
-                }
+                }R.id.navigation_forum -> {
+                navController.navigate(R.id.navigation_forum)
+                true
+            }
                 // Добавьте дополнительные элементы меню по мере необходимости
                 else -> false
             }
