@@ -226,9 +226,9 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
             <ImageView
-                android:layout_width="1dp"
-                android:layout_height="70dp"
-                android:src="@color/design_default_color_error"
+                android:layout_width="wrap_content"
+                android:layout_height="100dp"
+                android:src="@drawable/bearwithout"
                 />
         </LinearLayout>
     </ScrollView>
