@@ -88,9 +88,9 @@
 
     <ImageView
         android:id="@+id/imageView2"
-        android:layout_width="1dp"
+        android:layout_width="wrap_content"
         android:layout_height="50dp"
-        android:src="@color/design_default_color_error"
+        android:src="@drawable/bearwithout"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
